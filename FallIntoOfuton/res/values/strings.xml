@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Fall into the Ofuton</string>
+    <string name="setting">設定</string>
+    <string name="auth">認証</string>
+    <string name="acount">アカウント</string>
+    <string name="add_acount">アカウントを追加</string>
+    <string name="twitter_consumer_key">y0BRommy39OemJp6uHnhJw</string>
+    <string name="twitter_consumer_secret">MrtnTXFXX21WOG9r8lF4jFMy5Hw0O7XxHGsV5PejEkk</string>
+    <string name="twitter_oauth">Twitter認証</string>
+    <string name="twitter_callback_url">crakac://twitter</string>
+    <string name="dummy">xxxxxxxxxxxxxxxx</string>
+    <string name="menu_refresh">Reload</string>
+    <string name="menu_tweet">Tweet</string>
+    <string name="tweet">Tweet!</string>
+    <string name="show_conversation">会話を表示</string>
+    <string name="reply">返信する</string>
+    <string name="retweet">リツイートする</string>
+    <string name="unretweet">リツイートを取り消し</string>
+    <string name="favorite">お気に入りに追加</string>
+    <string name="unfavorite">お気に入りから削除</string>
+    <string name="read_more">もっと読む</string>
+    <string name="tap_to_reload">画面をタップして再読み込み</string>
+    <string name="now_loading">読み込み中…</string>
+</resources>

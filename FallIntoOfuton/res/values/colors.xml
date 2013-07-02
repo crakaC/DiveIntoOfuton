@@ -1,0 +1,29 @@
+<resources>
+
+    <color name="tab_indicator">#00cfeb</color>
+    <color name="tab_text">#FAFAFA</color>
+    <color name="transparent">#00000000</color>
+    <color name="light_gray">#A0A0A0</color>
+    <color name="gray">#404040</color>
+    <color name="dark_gray">#303030</color>
+    <color name="dark_gray_transparent">#C0303030</color>
+    <color name="transparent_black">#AE404040</color>
+    <color name="gray_blue">#404550</color>
+    <color name="gray_green">#405045</color>
+    <color name="gray_red">#554040</color>
+    <color name="dark_orange">#907050</color>
+    <color name="created_at">#B0B0B0</color>
+    <color name="text">#E0E0E0</color>
+    <color name="leftbar">#66cc6f</color>
+    <color name="select_start">#907050</color>
+    <color name="select_end">#806040</color>
+    <color name="droid_blue">#33B5E5</color>
+    <color name="droid_darkblue">#0099CC</color>
+    <color name="droid_green">#99CC00</color>
+    <color name="droid_darkgreen">#669900</color>
+    <color name="droid_yellow">#FFBB33</color>
+    <color name="droid_darkyellow">#FF8800</color>
+    <color name="droid_red">#FF4444</color>
+    <color name="droid_darkred">#CC0000</color>
+
+</resources>

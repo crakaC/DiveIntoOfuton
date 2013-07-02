@@ -1,0 +1,49 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/timeline_background"
+    android:padding="6dp" >
+
+    <com.loopj.android.image.SmartImageView
+        android:id="@+id/acountIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_launcher" />
+    
+    <TextView
+        android:id="@+id/acountName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/acountIcon"
+        android:layout_marginLeft="12dp"
+        android:text="@string/dummy"
+        android:textStyle="bold"
+        android:textColor="@color/text"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/checkMark"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/acountName"
+        android:src="@drawable/ic_check"
+        android:layout_marginLeft="6dp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/remove"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="6dp"
+        android:src="@drawable/ic_remove"
+        android:visibility="visible" />
+
+
+</RelativeLayout>

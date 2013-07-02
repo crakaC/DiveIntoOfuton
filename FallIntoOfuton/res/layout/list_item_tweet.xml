@@ -1,0 +1,103 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/timeline_background"
+    android:padding="6dp" >
+
+<!--
+  自分のやつは左にバーを表示させたかった・・
+    <View
+        android:id="@+id/leftbar"
+        android:layout_width="2dp"
+        android:layout_height="100dp"
+        android:background="@color/leftbar" />
+        -->    <com.loopj.android.image.SmartImageView
+        android:id="@+id/icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/icon"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/icon"
+        android:text="@string/dummy"
+        android:textColor="@color/droid_blue"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/name"
+        android:layout_below="@+id/name"
+        android:layout_toLeftOf="@+id/favedStar"
+        android:gravity="left|top"
+        android:text="@string/dummy"
+        android:textColor="@color/text"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/posted_at"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/text"
+        android:layout_below="@+id/text"
+        android:layout_marginTop="2dp"
+        android:layout_toLeftOf="@+id/favedStar"
+        android:gravity="left|top"
+        android:text="@string/dummy"
+        android:textColor="@color/created_at"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/posted_at_rt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/text"
+        android:layout_below="@+id/text"
+        android:layout_marginTop="12dp"
+        android:gravity="left|top"
+        android:text="@string/dummy"
+        android:textColor="@color/created_at"
+        android:textSize="10sp" />
+
+    <com.loopj.android.image.SmartImageView
+        android:id="@+id/small_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignBottom="@+id/posted_at_rt"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:layout_toRightOf="@+id/posted_at_rt"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/retweeted_by"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/small_icon"
+        android:layout_toRightOf="@+id/small_icon"
+        android:gravity="left|top"
+        android:textColor="@color/created_at"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/favedStar"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginLeft="2dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_star_color"
+        android:visibility="gone" />
+
+</RelativeLayout>
