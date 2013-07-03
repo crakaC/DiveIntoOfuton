@@ -1,5 +1,10 @@
-package com.crakac.fallintoofuton;
+package com.crakac.fallintoofuton.acounts;
 
+import com.crakac.fallintoofuton.MainActivity;
+import com.crakac.fallintoofuton.R;
+import com.crakac.fallintoofuton.R.id;
+import com.crakac.fallintoofuton.R.layout;
+import com.crakac.fallintoofuton.R.string;
 import com.crakac.fallintoofuton.util.AppUtil;
 import com.crakac.fallintoofuton.util.TwitterUtils;
 
@@ -121,6 +126,7 @@ public class TwitterOauthActivity extends Activity {
 	 * 
 	 */
 	private void successOAuth(AccessToken accessToken){
+		
 		TwitterUtils.storeAccessToken(this, accessToken);
 		TwitterUtils.storeUserInfo(this);
 		Intent intent = new Intent(this, MainActivity.class);

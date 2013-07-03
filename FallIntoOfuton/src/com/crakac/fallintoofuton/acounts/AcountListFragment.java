@@ -1,8 +1,13 @@
 package com.crakac.fallintoofuton.acounts;
 
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.auth.RequestToken;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,11 +20,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.crakac.fallintoofuton.R;
-import com.crakac.fallintoofuton.TwitterOauthActivity;
 import com.crakac.fallintoofuton.util.AppUtil;
 import com.crakac.fallintoofuton.util.TwitterUtils;
 
 public class AcountListFragment extends Fragment{
+	
+	ClickFooterListner listener;
+
+	public interface ClickFooterListner{
+		public void onClickFooter();
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -27,21 +38,23 @@ public class AcountListFragment extends Fragment{
 		AcountAdapter adapter = new AcountAdapter(getActivity());
 		ListView lv = (ListView)view.findViewById(R.id.acountList);
 		View footerView = inflater.inflate(R.layout.acount_footer, null);
+
+		listener = (ClickFooterListner)getActivity();
 		footerView.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				Intent reAuth = new Intent(getActivity(), TwitterOauthActivity.class);
-				startActivity(reAuth);
+				listener.onClickFooter();
 			}
 		});
 		lv.addFooterView(footerView);
+		lv.setEmptyView(footerView);
 		adapter.add(new Acount(TwitterUtils.getUserId(getActivity()), TwitterUtils.getUserScreenName(getActivity())));
 		lv.setAdapter(adapter);
 		return view;
 	}
 	
-
 	private class Acount{
 		String screenName;
+		String ImageUrl;
 		long userId;
 		Acount(long id, String name){
 			userId = id;
@@ -76,7 +89,7 @@ public class AcountListFragment extends Fragment{
 			} else {
 				check.setVisibility(View.GONE);
 			}
-			
+
 			remove.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					TwitterUtils.removeUser(item.userId);//TODO ŽÀ‘•‚µ‚æ‚¤

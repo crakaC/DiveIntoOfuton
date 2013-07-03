@@ -8,6 +8,7 @@ import twitter4j.UserList;
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.crakac.fallintoofuton.acounts.AcountSelectActivity;
+import com.crakac.fallintoofuton.acounts.TwitterOauthActivity;
 import com.crakac.fallintoofuton.status.StatusHolder;
 import com.crakac.fallintoofuton.timeline.HomeTimelineFragment;
 import com.crakac.fallintoofuton.util.AppUtil;
@@ -19,7 +20,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -50,7 +50,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (!TwitterUtils.hasAccessToken(this)) {
-			Intent intent = new Intent(this, TwitterOauthActivity.class);
+			Intent intent = new Intent(this, AcountSelectActivity.class);
 			startActivity(intent);
 			finish();
 		} else {
@@ -89,7 +89,6 @@ public class MainActivity extends FragmentActivity {
 	 * set pages to pagerAdapter
 	 */
 	private void setPages(TimelineFragmentPagerAdapter adapter){
-		
 		adapter.addFavoriteTimeline();
 		adapter.addMentionsTimeline();
 		adapter.addHomeTimeline();
