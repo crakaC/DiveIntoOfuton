@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import twitter4j.Status;
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -158,10 +157,9 @@ public class TweetStatusAdapter extends ArrayAdapter<twitter4j.Status> {
 		holder.icon.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//AppUtil.showToast(mContext, userName);
-				AppUtil.showToast(mContext, String.valueOf(status.getUser().getScreenName() + '\n' +status.getId() + '\n'  + String.valueOf(status.isFavorited())));
+				AppUtil.showToast(mContext, String.valueOf(status.getUser().getScreenName() + " " + status.getUser().getId() + '\n' +status.getId() + '\n'  + String.valueOf(status.isFavorited())));
 				if(status.isRetweet())
-				AppUtil.showToast(mContext, String.valueOf(status.getRetweetedStatus().getUser().getScreenName() + '\n' + status.getRetweetedStatus().getId()) +'\n'+ String.valueOf(status.getRetweetedStatus().isFavorited()));
+				AppUtil.showToast(mContext, String.valueOf(status.getRetweetedStatus().getUser().getScreenName() +  " " + status.getRetweetedStatus().getUser().getId() + '\n' + status.getRetweetedStatus().getId()) +'\n'+ String.valueOf(status.getRetweetedStatus().isFavorited()));
 			}
 		});
 		return convertView;

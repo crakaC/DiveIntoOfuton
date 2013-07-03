@@ -42,7 +42,7 @@ public class AcountListFragment extends Fragment{
 	public interface ClickFooterListner{
 		public void onClickFooter();
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class AcountListFragment extends Fragment{
 		});
 		lv.addFooterView(footerView);
 		
-		/****************DBテスト用****************************/
+		/****************テスト用****************************/
 //		View headerView = inflater.inflate(R.layout.acount_footer, null);
 //		headerView.setOnClickListener(new OnClickListener() {
 //			@Override
@@ -110,14 +110,15 @@ public class AcountListFragment extends Fragment{
 			screenName.setText(item.getScreenName());
 			if(item.IsCurrent()){
 				check.setVisibility(View.VISIBLE);
+				remove.setVisibility(View.GONE);
 			} else {
 				check.setVisibility(View.GONE);
+				remove.setVisibility(View.VISIBLE);
 			}
 
 			remove.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					TwitterUtils.removeUser(item);//TODO 実装しよう
-					AppUtil.showToast(mContext, "まだ消せない");
+					TwitterUtils.removeUser(item);
 				}
 			});
 			return convertView;
