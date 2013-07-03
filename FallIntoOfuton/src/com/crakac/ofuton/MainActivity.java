@@ -39,10 +39,6 @@ public class MainActivity extends FragmentActivity {
 	private ImageView composeBtn;
 	private Context selfContext;
 	private static final String TAG = MainActivity.class.getSimpleName();
-	private static final String PREF_NAME = "ListsInfo";
-	private static final String LIST_NAMES = "ListNames";
-	private static final String LIST_IDS = "ListsIds";
-	private static final String LIST_NUMS = "ListsNums";
 	
 	public MainActivity() {
 		selfContext = this;
@@ -50,7 +46,7 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (!TwitterUtils.hasAccessToken(this)) {
+		if (!TwitterUtils.existCurrentUser(this)) {
 			Intent intent = new Intent(this, AcountSelectActivity.class);
 			startActivity(intent);
 			finish();
@@ -121,18 +117,9 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			protected void onPostExecute(List<UserList> result) {
 				if(result != null){
-//					SharedPreferences preference = selfContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-//					SharedPreferences.Editor editor = preference.edit();					
-					for(int i = 0; i < result.size(); i++){
-						UserList list = result.get(i);
-//						editor.putInt(LIST_IDS + i,list.getId());
-//						editor.putString(LIST_NAMES + i, list.getName());
-//						
-						long userId = TwitterUtils.getUserId(selfContext);
-						TwitterUtils.addList(selfContext, new TwitterList( userId, list.getId(), list.getName(), list.getFullName()));
+					for(UserList list : result){
+						TwitterUtils.addList(selfContext, new TwitterList( TwitterUtils.getCurrentUserId(selfContext), list.getId(), list.getName(), list.getFullName()));
 					}
-//					editor.putInt(LIST_NUMS, result.size());
-//					editor.commit();
 					AppUtil.showToast(selfContext, "ƒŠƒXƒg‚Ì’Ç‰Á‚ªI‚í‚è‚Ü‚µ‚½");
 					finish();
 					startActivity(getIntent());
@@ -142,6 +129,11 @@ public class MainActivity extends FragmentActivity {
 		task.execute();
 	}
 
+	@Override
+	protected void onNewIntent(Intent intent) {
+		finish();
+		startActivity(getIntent());
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);

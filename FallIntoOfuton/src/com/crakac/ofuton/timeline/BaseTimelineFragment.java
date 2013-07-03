@@ -228,7 +228,7 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 					}
 					ptrListView.setMode(Mode.PULL_FROM_START);
 				} else {
-					AppUtil.showToast(selfFragment.getActivity(), "fail to get Tilmeline");
+					AppUtil.showToast(getActivity(), "fail to get Tilmeline");
 					setEmptyViewStandby();
 				}
 			}

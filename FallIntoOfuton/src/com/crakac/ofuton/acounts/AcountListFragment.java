@@ -31,6 +31,7 @@ import com.crakac.ofuton.util.AppUtil;
 import com.crakac.ofuton.util.TwitterUtils;
 import com.crakac.ofuton.util.User;
 import com.crakac.ofuton.util.UserDBAdapter;
+import com.loopj.android.image.SmartImageView;
 
 public class AcountListFragment extends Fragment{
 	
@@ -80,7 +81,6 @@ public class AcountListFragment extends Fragment{
 				startActivity(new Intent(getActivity(), MainActivity.class));
 			}
 		});
-		
 		reloadAcounts();
 		return view;
 	}
@@ -100,12 +100,13 @@ public class AcountListFragment extends Fragment{
 			if(convertView == null){
 				convertView = mInflater.inflate(R.layout.acount_listitem, parent, false);
 			}
-			//SmartImageView icon = (SmartImageView) convertView.findViewById(R.id.acountIcon);
+			SmartImageView icon = (SmartImageView) convertView.findViewById(R.id.acountIcon);
 			ImageView check = (ImageView) convertView.findViewById(R.id.checkMark);
 			ImageView remove = (ImageView) convertView.findViewById(R.id.remove);
 			TextView screenName = (TextView) convertView.findViewById(R.id.acountName);
-			//icon.setImageUri(uri);
+
 			final User item = getItem(position);
+			icon.setImageUrl(item.getIconUrl());
 			screenName.setText(item.getScreenName());
 			if(item.IsCurrent()){
 				check.setVisibility(View.VISIBLE);
@@ -119,7 +120,6 @@ public class AcountListFragment extends Fragment{
 					AppUtil.showToast(mContext, "Ç‹Çæè¡ÇπÇ»Ç¢");
 				}
 			});
-
 			return convertView;
 		}
 	}

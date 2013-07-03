@@ -11,6 +11,7 @@ import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class UserDBAdapter {
 	static final String DATABASE_NAME = "acount.db";
@@ -30,6 +31,8 @@ public class UserDBAdapter {
 	public static final String COL_LIST_ID = "ListID";
 	public static final String COL_LIST_NAME = "Name";
 	public static final String COL_LIST_LONGNAME = "FullName";
+	
+	private static final String TAG = UserDBAdapter.class.getSimpleName();
 	
 	protected final Context context;
 	protected DatabaseHelper dbHelper;
@@ -164,16 +167,18 @@ public class UserDBAdapter {
 		values.put(COL_LIST_LONGNAME, list.getFullName());
 		db.insertOrThrow(LIST_TABLE, null, values);
 	}
-	
+
 	public void setCurrentUser(User user) {
+		int rows;
 		//‘O‰ñ‚Ü‚Å‚Ìcurrent user‚ð‚½‚¾‚Ìuser‚É‚·‚é
 		ContentValues values = new ContentValues();
 		values.put(COL_IS_CURRENT, -1);
-		db.update(USER_TABLE, values, COL_IS_CURRENT + "=1", null);
-		
+		rows = db.update(USER_TABLE, values, COL_IS_CURRENT + "=1", null);
+		Log.d(TAG, rows + "rows, current -> not current");
 		values = new ContentValues();
 		values.put(COL_IS_CURRENT, 1);
-		db.update(USER_TABLE, values, COL_USERID + "=" +user.getUserId(), null);
+		rows = db.update(USER_TABLE, values, COL_USERID + "=" +user.getUserId(), null);
+		Log.d(TAG, rows + "rows, not current -> current");
 	}
 	public Cursor getCurrentUser(){
 		return db.query(USER_TABLE, null, COL_IS_CURRENT+"=1", null, null, null, null);

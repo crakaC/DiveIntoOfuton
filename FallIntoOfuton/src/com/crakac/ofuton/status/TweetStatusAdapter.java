@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.crakac.fallintoofuton.R;
 import com.crakac.ofuton.util.AppUtil;
 import com.crakac.ofuton.util.TwitterUtils;
+import com.crakac.ofuton.util.User;
 import com.loopj.android.image.SmartImageView;
 
 public class TweetStatusAdapter extends ArrayAdapter<twitter4j.Status> {
@@ -44,6 +45,13 @@ public class TweetStatusAdapter extends ArrayAdapter<twitter4j.Status> {
 		mContext = context;
 		mInflater = (LayoutInflater) context
 				.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+		Log.d(TAG,"constructor");
+		
+		User user = TwitterUtils.getCurrentUser(mContext);
+		userId = user.getUserId();
+		userScreenName = user.getScreenName();
+		Log.d(TAG, "get user id " + userId);
+		Log.d(TAG, "get user's screen name " + userScreenName);
 	}
 
 	@Override
@@ -55,14 +63,6 @@ public class TweetStatusAdapter extends ArrayAdapter<twitter4j.Status> {
 	public static View createView(Status item, View convertView){
 		Status origItem = item;
 		ViewHolder holder;
-		
-		//set userId and userScreenName to detect reply from status.text
-		if(userId == NOT_SET || userScreenName == null){
-			userId = TwitterUtils.getUserId(mContext);
-			userScreenName = TwitterUtils.getUserScreenName(mContext);
-			Log.d(TAG, "get user id " + userId);
-			Log.d(TAG, "get user's screen name " + userScreenName);
-		}
 
 		if (convertView == null) {
 			convertView = mInflater.inflate(R.layout.list_item_tweet, null);

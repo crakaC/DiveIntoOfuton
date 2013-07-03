@@ -45,10 +45,12 @@ public class TwitterUtils {
 		AsyncTwitterFactory factory = new AsyncTwitterFactory();
 		AsyncTwitter twitter = factory.getInstance();
 		twitter.setOAuthConsumer( consumerKey, consumerSecret );
-
-		if( hasAccessToken(context) ){
-			twitter.setOAuthAccessToken( loadAccessToken( context ) );
+		
+		if( existCurrentUser(context) ){
+			User currentUser = getCurrentUser(context);
+			twitter.setOAuthAccessToken( new AccessToken(currentUser.getToken(), currentUser.getTokenSecret()) );
 		}
+
 		return twitter;
 	}
 	
@@ -65,9 +67,10 @@ public class TwitterUtils {
 		TwitterFactory factory = new TwitterFactory();
 		Twitter twitter = factory.getInstance();
 		twitter.setOAuthConsumer( consumerKey, consumerSecret );
-
-		if( hasAccessToken(context) ){
-			twitter.setOAuthAccessToken( loadAccessToken( context ) );
+		
+		if( existCurrentUser(context) ){
+			User currentUser = getCurrentUser(context);
+			twitter.setOAuthAccessToken( new AccessToken(currentUser.getToken(), currentUser.getTokenSecret()) );
 		}
 		return twitter;
 	}
@@ -106,15 +109,6 @@ public class TwitterUtils {
 	}
 
 	/**
-	 * Return true if it has access token.
-	 * @return
-	 */
-	public static boolean hasAccessToken( Context context )
-	{
-		return loadAccessToken( context ) != null;
-	}
-
-	/**
 	 * Return Twitter instance without request token
 	 * @param context
 	 * @return
@@ -136,63 +130,37 @@ public class TwitterUtils {
 	 * @param context
 	 * @return user id
 	 */
-	public static long getUserId(Context context) {
-		SharedPreferences preferences = context.getSharedPreferences( USER_INFO, Context.MODE_PRIVATE );
-		return preferences.getLong(USER_ID, -1);
-	}
-
-	/**
-	 * @param context
-	 * @return user's screen name
-	 */
-	public static String getUserScreenName(Context context) {
-		SharedPreferences preferences = context.getSharedPreferences( USER_INFO, Context.MODE_PRIVATE );
-		return preferences.getString(USER_SCREEN_NAME, null);
+	public static long getCurrentUserId(Context context) {
+		User user = getCurrentUser(context);
+		if(user != null){
+			return user.getUserId();
+		} else {
+			return -1;
+		}
 	}
 
 	public static void removeUser(User item) {
 		//TODO 何とかして，ユーザー情報を消そう
 	}
 
-	public static Cursor addDBTest(Context context) {
-		Twitter tw = getTwitterInstance(context);
-		UserDBAdapter dbAdapter = new UserDBAdapter(context);
-		dbAdapter.open();
-		twitter4j.User user;
-		try {
-			user = tw.showUser(tw.getId());
-			//dbAdapter.saveUser(new User(tw.getId(), tw.getScreenName(), user.getProfileImageURL(), false));
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TwitterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Cursor c = dbAdapter.getAllUsers();
-		dbAdapter.close();
-		return c;
-	}
-	
 	public static void addUser(Context context){
-		Twitter tw = getTwitterInstance(context);
+		Twitter tw = getTwitterInstanceForAuth(context);
+		tw.setOAuthAccessToken(loadAccessToken(context));
 		UserDBAdapter dbAdapter = new UserDBAdapter(context);
 		dbAdapter.open();
 		twitter4j.User user;
 		try {
 			user = tw.showUser(tw.getId());
 			dbAdapter.saveUser(new User(
-					tw.getId(),
-					tw.getScreenName(), 
+					user.getId(),
+					user.getScreenName(), 
 					user.getProfileImageURL(),
 					loadAccessToken(context).getToken(),
 					loadAccessToken(context).getTokenSecret(),
 					false));
 		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (TwitterException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		dbAdapter.close();
@@ -227,7 +195,7 @@ public class TwitterUtils {
 		List<TwitterList> list = new ArrayList<TwitterList>();
 		UserDBAdapter dbAdapter = new UserDBAdapter(context);
 		dbAdapter.open();
-		Cursor c = dbAdapter.getLists(getUserId(context));
+		Cursor c = dbAdapter.getLists(getCurrentUser(context).getUserId());
 		while(c.moveToNext()){
 			list.add(new TwitterList(
 					c.getLong(c.getColumnIndex(UserDBAdapter.COL_USERID)),
@@ -247,7 +215,7 @@ public class TwitterUtils {
 		dbAdapter.setCurrentUser(user);
 		dbAdapter.close();
 	}
-	
+
 	public static User getCurrentUser(Context context){
 		User user = null;
 		UserDBAdapter dbAdapter = new UserDBAdapter(context);
@@ -265,5 +233,9 @@ public class TwitterUtils {
 		}
 		dbAdapter.close();
 		return user;
+	}
+
+	public static boolean existCurrentUser(Context context) {
+		return getCurrentUser(context) != null;
 	}
 }

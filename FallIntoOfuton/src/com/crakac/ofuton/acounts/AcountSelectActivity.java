@@ -19,7 +19,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -29,6 +31,7 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 	private RequestToken mRequestToken;
 	private String mCallbackURL;
 	private static final String REQUEST_TOKEN = "request_token";
+	private static final String TAG = AcountSelectActivity.class.getSimpleName();
 	private Context mContext;
 
 	private ViewPager pager;
@@ -75,7 +78,7 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 
 	@Override
 	public void onNewIntent(Intent intent) {
-		
+		Log.d(TAG, "onNewIntent");
 		if(intent == null
 				|| intent.getData() == null
 				|| !intent.getData().toString().startsWith(mCallbackURL)){
@@ -86,8 +89,11 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 
 			@Override
 			protected void onPreExecute() {
-				progressDialog = ProgressDialogFragment.newInstance("しばらくお待ちください");
-				progressDialog.show(getSupportFragmentManager(), "progress_dialog");
+				progressDialog = ProgressDialogFragment.newInstance("認証中です");
+				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+				transaction.add(progressDialog, "loading");
+				transaction.commitAllowingStateLoss();
+				//progressDialog.show(getSupportFragmentManager(), "progress_dialog");
 			}
 
 			@Override
@@ -102,11 +108,11 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 
 			@Override
 			protected void onPostExecute(AccessToken accessToken) {
+				progressDialog.dismiss();
 				if (accessToken != null){
-					AppUtil.showToast(getApplicationContext(),"Success authorization");
 					successOAuth(accessToken);
 				} else {
-					AppUtil.showToast(getApplicationContext(),"Fail Authorization");
+					AppUtil.showToast(getApplicationContext(),"認証に失敗しました");
 				}
 			}
 		};
@@ -118,11 +124,17 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 	 * 
 	 */
 	private void successOAuth(AccessToken accessToken){
-		TwitterUtils.storeAccessToken(this, accessToken);
-		AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+		AsyncTask<AccessToken, Void, Void> task = new AsyncTask<AccessToken, Void, Void>() {
 			
 			@Override
-			protected Void doInBackground(Void... params) {
+			protected void onPreExecute() {
+				progressDialog = ProgressDialogFragment.newInstance("ユーザー情報を取得しています");
+				progressDialog.show(getSupportFragmentManager(), "progress");
+			}
+
+			@Override
+			protected Void doInBackground(AccessToken... params) {
+				TwitterUtils.storeAccessToken(mContext, params[0]);
 				TwitterUtils.addUser(mContext);
 				return null;
 			}
@@ -130,12 +142,12 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 			@Override
 			protected void onPostExecute(Void result) {
 				progressDialog.dismiss();
-				//mFragment.reloadAcounts();
+				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 				finish();
 				startActivity(getIntent());
 			}
 		};
-		task.execute();
+		task.execute(accessToken);
 		}
 
 	@Override
@@ -144,6 +156,13 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 	 * start oauth
 	 */
 		AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>(){
+			
+			@Override
+			protected void onPreExecute() {
+				progressDialog = ProgressDialogFragment.newInstance("しばらくお待ちください");
+				progressDialog.show(getSupportFragmentManager(), "progress");
+			}
+
 			@Override
 			protected String doInBackground(Void... params) {
 				try {
@@ -157,9 +176,11 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 
 			@Override
 			protected void onPostExecute(String url) {
+				progressDialog.dismiss();
 				if (url != null) {
 					Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse(url));
 					startActivity(intent);
+					//finish();
 				} else {
 					// mistake
 				}
