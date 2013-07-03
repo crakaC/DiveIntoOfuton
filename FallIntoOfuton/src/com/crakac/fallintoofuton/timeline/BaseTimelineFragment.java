@@ -108,7 +108,7 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 		listView = ptrListView.getRefreshableView();
 		listView.setFastScrollEnabled(true);
 		listView.setScrollingCacheEnabled(false);//ƒXƒNƒ[ƒ‹‚Ì‚¿‚ç‚Â‚«–h~
-		listView.setDivider(getResources().getDrawable(R.color.dark_gray));//TODO move to xml
+		listView.setDivider(getResources().getDrawable(R.color.dark_gray));
 		listView.setDividerHeight(1);
 		if (footerView == null) {
 			footerView = (View) inflater.inflate(R.layout.list_item_footer,

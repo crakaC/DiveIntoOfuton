@@ -13,6 +13,7 @@ import com.crakac.fallintoofuton.acounts.AcountListFragment.ClickFooterListner;
 import com.crakac.fallintoofuton.util.AppUtil;
 import com.crakac.fallintoofuton.util.TwitterUtils;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -28,11 +29,14 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 	private RequestToken mRequestToken;
 	private String mCallbackURL;
 	private static final String REQUEST_TOKEN = "request_token";
+	private Context mContext;
 
 	private ViewPager pager;
 	private PagerSlidingTabStrip tab;
 	private SimpleFragmentPagerAdapter adapter;
+	private ProgressDialogFragment progressDialog;
 	
+	private AcountListFragment mFragment;
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -47,6 +51,7 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mContext = this;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
 		ImageView iv = (ImageView)findViewById(R.id.tweetEveryWhere);
@@ -62,10 +67,10 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 		tab.setIndicatorColorResource(android.R.color.white);
 		tab.setViewPager(pager);
 		
-		mTwitter = TwitterUtils.getTwitterInstance(this);
+		mTwitter = TwitterUtils.getTwitterInstanceForAuth(this);
 		mCallbackURL = getString(R.string.twitter_callback_url);
-		AcountListFragment fragment = new AcountListFragment();
-		adapter.setFragment(fragment);
+		mFragment = new AcountListFragment();
+		adapter.setFragment(mFragment);
 	}
 
 	@Override
@@ -78,12 +83,11 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 		}
 		String verifier = intent.getData().getQueryParameter("oauth_verifier");
 		AsyncTask<String, Void, AccessToken> task = new AsyncTask<String, Void, AccessToken>(){
-			ProgressDialogFragment dialog;
-			
+
 			@Override
 			protected void onPreExecute() {
-				dialog = ProgressDialogFragment.newInstance("‚µ‚Î‚ç‚­‚¨‘Ò‚¿‚­‚¾‚³‚¢");
-				dialog.show(getSupportFragmentManager(), "progress_dialog");
+				progressDialog = ProgressDialogFragment.newInstance("‚µ‚Î‚ç‚­‚¨‘Ò‚¿‚­‚¾‚³‚¢");
+				progressDialog.show(getSupportFragmentManager(), "progress_dialog");
 			}
 
 			@Override
@@ -98,7 +102,6 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 
 			@Override
 			protected void onPostExecute(AccessToken accessToken) {
-				dialog.dismiss();
 				if (accessToken != null){
 					AppUtil.showToast(getApplicationContext(),"Success authorization");
 					successOAuth(accessToken);
@@ -116,8 +119,24 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 	 */
 	private void successOAuth(AccessToken accessToken){
 		TwitterUtils.storeAccessToken(this, accessToken);
-		TwitterUtils.storeUserInfo(this);
-	}
+		AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+			
+			@Override
+			protected Void doInBackground(Void... params) {
+				TwitterUtils.addUser(mContext);
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				progressDialog.dismiss();
+				//mFragment.reloadAcounts();
+				finish();
+				startActivity(getIntent());
+			}
+		};
+		task.execute();
+		}
 
 	@Override
 	public void onClickFooter() {

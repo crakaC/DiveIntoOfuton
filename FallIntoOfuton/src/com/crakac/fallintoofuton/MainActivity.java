@@ -12,6 +12,7 @@ import com.crakac.fallintoofuton.acounts.TwitterOauthActivity;
 import com.crakac.fallintoofuton.status.StatusHolder;
 import com.crakac.fallintoofuton.timeline.HomeTimelineFragment;
 import com.crakac.fallintoofuton.util.AppUtil;
+import com.crakac.fallintoofuton.util.TwitterList;
 import com.crakac.fallintoofuton.util.TwitterUtils;
 
 import android.content.Context;
@@ -36,7 +37,6 @@ public class MainActivity extends FragmentActivity {
 	private TimelineFragmentPagerAdapter pagerAdapter;
 	private ImageView composeBtn;
 	private Context selfContext;
-	private List<twitter4j.UserList> lists;
 	private static final String TAG = MainActivity.class.getSimpleName();
 	private static final String PREF_NAME = "ListsInfo";
 	private static final String LIST_NAMES = "ListNames";
@@ -92,10 +92,9 @@ public class MainActivity extends FragmentActivity {
 		adapter.addFavoriteTimeline();
 		adapter.addMentionsTimeline();
 		adapter.addHomeTimeline();
-		SharedPreferences preference = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-		int listsNum = preference.getInt(LIST_NUMS, 0);
-		for(int i = 0; i < listsNum; i++){
-			adapter.addList(preference.getInt(LIST_IDS+i, 0), preference.getString(LIST_NAMES+i, null));
+		List<TwitterList> lists = TwitterUtils.getLists(selfContext);
+		for(TwitterList list : lists){
+			adapter.addList(list.getListId(), list.getName());
 		}
 	}
 
@@ -110,8 +109,7 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			protected List<UserList> doInBackground(Void... params) {
 				try {
-					lists = twitter.getUserLists(twitter.getId());
-					return lists;
+					return twitter.getUserLists(twitter.getId());
 				} catch (IllegalStateException e) {
 					e.printStackTrace();
 				} catch (TwitterException e) {
@@ -121,16 +119,22 @@ public class MainActivity extends FragmentActivity {
 			}
 			@Override
 			protected void onPostExecute(List<UserList> result) {
-				if(lists != null){
-					SharedPreferences preference = selfContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-					SharedPreferences.Editor editor = preference.edit();					
-					for(int i = 0; i < lists.size(); i++){
-						editor.putInt(LIST_IDS + i,lists.get(i).getId());
-						editor.putString(LIST_NAMES + i, lists.get(i).getName());
+				if(result != null){
+//					SharedPreferences preference = selfContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+//					SharedPreferences.Editor editor = preference.edit();					
+					for(int i = 0; i < result.size(); i++){
+						UserList list = result.get(i);
+//						editor.putInt(LIST_IDS + i,list.getId());
+//						editor.putString(LIST_NAMES + i, list.getName());
+//						
+						long userId = TwitterUtils.getUserId(selfContext);
+						TwitterUtils.addList(selfContext, new TwitterList( userId, list.getId(), list.getName(), list.getFullName()));
 					}
-					editor.putInt(LIST_NUMS, lists.size());
-					editor.commit();
+//					editor.putInt(LIST_NUMS, result.size());
+//					editor.commit();
 					AppUtil.showToast(selfContext, "ƒŠƒXƒg‚Ì’Ç‰Á‚ªI‚í‚è‚Ü‚µ‚½");
+					finish();
+					startActivity(getIntent());
 				}
 			}
 		};

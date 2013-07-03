@@ -1,31 +1,42 @@
 package com.crakac.fallintoofuton.acounts;
 
+import java.util.List;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.RequestToken;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.crakac.fallintoofuton.MainActivity;
 import com.crakac.fallintoofuton.R;
 import com.crakac.fallintoofuton.util.AppUtil;
 import com.crakac.fallintoofuton.util.TwitterUtils;
+import com.crakac.fallintoofuton.util.User;
+import com.crakac.fallintoofuton.util.UserDBAdapter;
 
 public class AcountListFragment extends Fragment{
 	
+	private static final String TAG = AcountListFragment.class.getSimpleName();
 	ClickFooterListner listener;
+	AcountAdapter mAdapter;
 
 	public interface ClickFooterListner{
 		public void onClickFooter();
@@ -34,35 +45,47 @@ public class AcountListFragment extends Fragment{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		Log.d(TAG, "onCreateView");
 		View view = inflater.inflate(R.layout.acount_listfragment, container, false);
-		AcountAdapter adapter = new AcountAdapter(getActivity());
+		mAdapter = new AcountAdapter(getActivity());
 		ListView lv = (ListView)view.findViewById(R.id.acountList);
-		View footerView = inflater.inflate(R.layout.acount_footer, null);
-
 		listener = (ClickFooterListner)getActivity();
+		View footerView = inflater.inflate(R.layout.acount_footer, null);
 		footerView.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				listener.onClickFooter();
 			}
 		});
 		lv.addFooterView(footerView);
-		lv.setEmptyView(footerView);
-		adapter.add(new Acount(TwitterUtils.getUserId(getActivity()), TwitterUtils.getUserScreenName(getActivity())));
-		lv.setAdapter(adapter);
+		
+		/****************DBテスト用****************************/
+//		View headerView = inflater.inflate(R.layout.acount_footer, null);
+//		headerView.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				
+//			}
+//		});
+//		lv.addHeaderView(headerView);
+		/***********************************************************************/		
+
+		lv.setAdapter(mAdapter);
+		lv.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int pos,
+					long id) {
+				ListView lv = (ListView)parent;
+				User user = (User)lv.getItemAtPosition(pos);
+				TwitterUtils.setCurrentUser(getActivity(), user);
+				startActivity(new Intent(getActivity(), MainActivity.class));
+			}
+		});
+		
+		reloadAcounts();
 		return view;
 	}
 	
-	private class Acount{
-		String screenName;
-		String ImageUrl;
-		long userId;
-		Acount(long id, String name){
-			userId = id;
-			screenName = name;
-		}
-	}
-
-	private class AcountAdapter extends ArrayAdapter<Acount>{
+	private class AcountAdapter extends ArrayAdapter<User>{
 		LayoutInflater mInflater;
 		Context mContext;
 		public AcountAdapter(Context context) {
@@ -82,9 +105,9 @@ public class AcountListFragment extends Fragment{
 			ImageView remove = (ImageView) convertView.findViewById(R.id.remove);
 			TextView screenName = (TextView) convertView.findViewById(R.id.acountName);
 			//icon.setImageUri(uri);
-			final Acount item = getItem(position);
-			screenName.setText(item.screenName);
-			if(item.userId == TwitterUtils.getUserId(mContext)){
+			final User item = getItem(position);
+			screenName.setText(item.getScreenName());
+			if(item.IsCurrent()){
 				check.setVisibility(View.VISIBLE);
 			} else {
 				check.setVisibility(View.GONE);
@@ -92,12 +115,22 @@ public class AcountListFragment extends Fragment{
 
 			remove.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					TwitterUtils.removeUser(item.userId);//TODO 実装しよう
+					TwitterUtils.removeUser(item);//TODO 実装しよう
 					AppUtil.showToast(mContext, "まだ消せない");
 				}
 			});
 
 			return convertView;
 		}
+	}
+
+	public void reloadAcounts() {
+		Log.d(TAG, "called reloadAcounts");
+		mAdapter.clear();
+		List<User> users = TwitterUtils.getUsers(getActivity());
+		for(User user : users){
+			mAdapter.add(user);
+		}
+		mAdapter.notifyDataSetChanged();
 	}
 }
