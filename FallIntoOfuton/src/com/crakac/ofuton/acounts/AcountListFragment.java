@@ -78,7 +78,9 @@ public class AcountListFragment extends Fragment{
 				ListView lv = (ListView)parent;
 				User user = (User)lv.getItemAtPosition(pos);
 				TwitterUtils.setCurrentUser(getActivity(), user);
+				getActivity().finish();
 				startActivity(new Intent(getActivity(), MainActivity.class));
+				
 			}
 		});
 		reloadAcounts();
