@@ -25,16 +25,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TwitterOauthActivity"
+            android:name="com.crakac.fallintoofuton.acounts.TwitterOauthActivity"
             android:launchMode="singleTask" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:host="twitter"
-                    android:scheme="crakac" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".TweetActivity"
@@ -45,6 +37,15 @@
              />
         <activity
             android:name="com.crakac.fallintoofuton.acounts.AcountSelectActivity"
-             />
+                    android:launchMode="singleTask" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="twitter"
+                    android:scheme="crakac" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
