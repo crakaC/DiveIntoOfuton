@@ -1,14 +1,12 @@
-package com.crakac.ofuton.timeline;
+package com.crakac.ofuton.conversation;
 
-import java.util.List;
-import java.util.ListIterator;
 
+import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 import com.crakac.fallintoofuton.R;
 import com.crakac.ofuton.TweetActivity;
-import com.crakac.ofuton.conversation.ShowConversationActivity;
 import com.crakac.ofuton.status.StatusDialogFragment;
 import com.crakac.ofuton.status.StatusHolder;
 import com.crakac.ofuton.status.TweetStatusAdapter;
@@ -16,10 +14,8 @@ import com.crakac.ofuton.status.StatusDialogFragment.ActionSelectListener;
 import com.crakac.ofuton.util.AppUtil;
 import com.crakac.ofuton.util.TwitterUtils;
 
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import android.content.Intent;
@@ -35,35 +31,33 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public abstract class BaseTimelineFragment extends Fragment implements ActionSelectListener {
+public class ConversationFragment extends Fragment implements ActionSelectListener {
 
 	private TweetStatusAdapter mAdapter;// statusを保持してlistviewに表示する奴
 	private Twitter mTwitter;
-	private PullToRefreshListView ptrListView;// 引っ張って更新できるやつ
+	private PullToRefreshListView ptrListView;
 	private ListView listView;// 引っ張って更新できるやつの中身
-	private View footerView, emptyView;// 一番下のやつ,最初のやつ
-	private TextView emptyText;
-	private ProgressBar emptyProgress;
+	private View footerView;// 一番下のやつ
+	private TextView footerText;
+	private ProgressBar footerProgress;
 	// private GestureDetector gestureDetector;
-	private long sinceId = -1l, maxId = -1l;// ツイートを取得するときに使う．
-	AsyncTask<Void, Void, List<twitter4j.Status>> initTask, loadNewTask,
-			loadPreviousTask;
-	AsyncTask<Void, Void, twitter4j.Status> favTask, rtTask;
-	private final BaseTimelineFragment selfFragment;
-	private static final String TAG = BaseTimelineFragment.class.getSimpleName();
-
-	public BaseTimelineFragment(){
+	private long nextId = -1l;// ツイートを取得するときに使う．
+	private AsyncTask<Void, Void, twitter4j.Status> initTask;
+	private AsyncTask<Void, Void, twitter4j.Status> loadPreviousTask, loadMorePreviousTask;
+	private AsyncTask<Void, Void, twitter4j.Status> favTask, rtTask;
+	private boolean alreadyShown = false;
+	private final ConversationFragment selfFragment;
+	private static final String TAG = ConversationFragment.class.getSimpleName();
+	public ConversationFragment(){
 		selfFragment = this;
 	}
 	@Override
@@ -74,13 +68,11 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 	}
 
 	@Override
-	// onCreateViewはpagerで2つ隣のfragmentから隣のfragmentに移ってきたときに呼ばれる．
-	// 表示するためのViewを作成するイメージで．
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// gestureDetector = new GestureDetector(new
 		// MyGestureListener(getActivity()));
-		View view = inflater.inflate(R.layout.tweet_lists, null);
+		View view = inflater.inflate(R.layout.conversation_listfragment, null);
 
 		if (mAdapter == null) {
 			mAdapter = new TweetStatusAdapter(getActivity());
@@ -89,52 +81,29 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 		if (mTwitter == null){
 			mTwitter = TwitterUtils.getTwitterInstance(getActivity());
 		}
-
-		//引っ張って更新できるやつ
-		ptrListView = (PullToRefreshListView) view.findViewById(R.id.listView1);
-		ptrListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
-			@Override
-			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-				loadNewTweets();
-			}
-		});
-		ptrListView
-				.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
-					@Override
-					public void onLastItemVisible() {
-						loadPreviousTweets();
-					}
-				});
-		//中身のListView
+		ptrListView = (PullToRefreshListView) view.findViewById(R.id.conversationList);
 		listView = ptrListView.getRefreshableView();
-		listView.setFastScrollEnabled(true);
-		listView.setScrollingCacheEnabled(false);//スクロール時のちらつき防止
 		listView.setDivider(getResources().getDrawable(R.color.dark_gray));
 		listView.setDividerHeight(1);
-		if (footerView == null) {
-			footerView = (View) inflater.inflate(R.layout.list_item_footer,
-					null);
+		if(footerView == null){
+			footerView = (View) inflater.inflate(R.layout.list_item_footer,null);
 		}
-		listView.addFooterView(footerView);
-		footerView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				loadPreviousTweets();
-			}
-		});
-		if (emptyView == null) {
-			emptyView = (View) inflater.inflate(R.layout.list_item_empty, null);
+		footerText = (TextView) footerView.findViewById(R.id.listFooterText);
+		footerProgress = (ProgressBar) footerView.findViewById(R.id.listFooterProgress);
+		if(!alreadyShown){
+			ptrListView.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
+				@Override
+				public void onLastItemVisible() {
+					loadPreviousTweet();
+				}
+			});
+			listView.addFooterView(footerView);
+			footerView.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View arg0) {
+					loadPreviousTweet();
+				}
+			});
 		}
-		emptyText = (TextView) emptyView.findViewById(R.id.emptyText);
-		emptyProgress = (ProgressBar) emptyView
-				.findViewById(R.id.emptyProgress);
-		emptyView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				initTimeline();
-			}
-		});
-		listView.setEmptyView(emptyView);
 		listView.setAdapter(mAdapter);
 
 		/*
@@ -158,7 +127,7 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 				dialog.show(getFragmentManager(), "dialog");
 			}
 		});
-		initTimeline();
+		initConversation();
 		return view;
 	}
 
@@ -176,203 +145,159 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		getActivity().getMenuInflater().inflate(R.menu.timeline, menu);
+		//getActivity().getMenuInflater().inflate(R.menu.timeline, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch(item.getItemId()){
-		case R.id.menu_refresh :
-			mAdapter.clear();
-			mAdapter.notifyDataSetChanged();
-			initialStatuses();
-		}
+//		switch(item.getItemId()){
+//		case R.id.menu_refresh :
+//			mAdapter.clear();
+//			mAdapter.notifyDataSetChanged();
+//			initialStatuses();
+//		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void initTimeline() {
-		if (initTask != null
-				&& initTask.getStatus() == AsyncTask.Status.RUNNING) {
+	private void initConversation() {
+		if (initTask != null) {
 			return;
 		}
-		if (mAdapter.getCount() > 0) {
-			ptrListView.setMode(Mode.PULL_FROM_START);
-			Log.d(TAG, "mAdapter has items." );
-			return;
-		}
-		initTask = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
+		initTask = new AsyncTask<Void, Void, twitter4j.Status>() {
 			@Override
 			protected void onPreExecute() {
-				super.onPreExecute();
-				if (emptyView.isEnabled()) {
-					setEmptyViewLoading();
-				}
-			}
-
-			@Override
-			protected List<twitter4j.Status> doInBackground(Void... params) {
-				return initialStatuses();
-			}
-
-			@Override
-			protected void onPostExecute(List<twitter4j.Status> result) {
-				if (result != null) {
-					for (twitter4j.Status status : result) {
-						mAdapter.add(status);
-					}
-					if (result.size() > 0) {
-						maxId = result.listIterator(result.size()).previous()
-								.getId();
-						sinceId = result.iterator().next().getId();
-						mAdapter.notifyDataSetChanged();
-					}
-					ptrListView.setMode(Mode.PULL_FROM_START);
+				setFooterViewLoading();
+				twitter4j.Status status;
+				if(StatusHolder.getStatus().isRetweet()){
+					status = StatusHolder.getStatus().getRetweetedStatus();
 				} else {
-					AppUtil.showToast(getActivity(), "fail to get Tilmeline");
-					setEmptyViewStandby();
+					status = StatusHolder.getStatus();
+				}
+				mAdapter.add(status);
+				nextId = status.getInReplyToStatusId();
+			}
+			@Override
+			protected twitter4j.Status doInBackground(Void... params) {
+				return nextTweet(nextId);
+			}
+
+			@Override
+			protected void onPostExecute(twitter4j.Status result) {
+				if (result != null) {
+					mAdapter.add(result);
+					nextId = result.getInReplyToStatusId();
+					Log.d(TAG, "nextId:" + nextId);
+					if(nextId > 0){
+						loadPreviousTweet();
+					} else {
+						removeFooterView();
+					}
+				} else {
+					AppUtil.showToast(getActivity(), "何かがおかしいよ");
+					setFooterViewStandby();
 				}
 			}
 		};
 		initTask.execute();
 	}
 
-	private void loadNewTweets() {
-		if (loadNewTask != null
-				&& loadNewTask.getStatus() == AsyncTask.Status.RUNNING) {
-			return;
-		}
-		loadNewTask = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
-			
-			@Override
-			protected List<twitter4j.Status> doInBackground(Void... params) {
-				return newStatuses(sinceId, 200);
-			}
-
-			@Override
-			protected void onPostExecute(List<twitter4j.Status> result) {
-				if (result != null) {
-					int lastPos = listView.getFirstVisiblePosition();//新しいstatus追加前の一番上のポジションを保持
-					for (ListIterator<twitter4j.Status> ite = result
-							.listIterator(result.size()); ite.hasPrevious();) {
-						mAdapter.insert(ite.previous(), 0);
-					}
-					if (result.size() > 0) {
-						sinceId = result.iterator().next().getId();
-						mAdapter.notifyDataSetChanged();
-						
-						//あんまりうまいこといってないっぽい．
-						listView.setSelection(lastPos + result.size());//追加した分ずらす
-					}
-				} else {
-					AppUtil.showToast(getActivity(), "fail to get Tilmeline");
-				}
-				ptrListView.onRefreshComplete();
-			}
-		};
-		loadNewTask.execute();
-	}
-
-	private void loadPreviousTweets() {
+	private void loadPreviousTweet() {
 		if (loadPreviousTask != null
 				&& loadPreviousTask.getStatus() == AsyncTask.Status.RUNNING) {
 			return;
 		}
-		loadPreviousTask = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
-			TextView tv;
-			ProgressBar pb;
-			String readMore;
-
+		loadPreviousTask = new AsyncTask<Void, Void, Status>() {
+			
 			@Override
-			protected void onPreExecute() {
-				super.onPreExecute();
-				tv = (TextView) footerView.findViewById(R.id.listFooterText);
-				tv.setText(getResources().getString(R.string.now_loading));
-				pb = (ProgressBar) footerView
-						.findViewById(R.id.listFooterProgress);
-				pb.setVisibility(View.VISIBLE);
-				readMore = getResources().getString(R.string.read_more);
+			protected twitter4j.Status doInBackground(Void... params) {
+				return nextTweet(nextId);
 			}
-
 			@Override
-			protected List<twitter4j.Status> doInBackground(Void... params) {
-				return previousStatuses(maxId, 50);
-			}
-
-			@Override
-			protected void onPostExecute(List<twitter4j.Status> result) {
+			protected void onPostExecute(twitter4j.Status result) {
 				if (result != null) {
-					for (twitter4j.Status status : result) {
-						mAdapter.add(status);
-					}
-					if (result.size() > 0) {
-						maxId = result.listIterator(result.size()).previous()
-								.getId();
-						mAdapter.notifyDataSetChanged();
+					mAdapter.add(result);
+					mAdapter.notifyDataSetChanged();
+					nextId = result.getInReplyToStatusId();
+					Log.d(TAG, "nextId:" + nextId);
+					if(nextId > 0){
+						//new LoadConversationTask().execute(next);
+						loadMorePreviousTweet();
+					} else {
+						removeFooterView();
+						Log.d(TAG, "正常終了");
 					}
 				} else {
-					failToGetStatuses();
+					AppUtil.showToast(getActivity(), "何かがおかしいよ");
+					setFooterViewStandby();
 				}
-				tv.setText(readMore);
-				pb.setVisibility(View.GONE);
 			}
 		};
 		loadPreviousTask.execute();
 	}
 
-	private void setEmptyViewLoading() {
-		emptyText.setText(getResources().getString(R.string.now_loading));
-		emptyProgress.setVisibility(View.VISIBLE);
+	private void loadMorePreviousTweet() {
+		if (loadMorePreviousTask != null
+				&& loadMorePreviousTask.getStatus() == AsyncTask.Status.RUNNING) {
+			return;
+		}
+		loadMorePreviousTask = new AsyncTask<Void, Void, Status>() {
+			
+			@Override
+			protected twitter4j.Status doInBackground(Void... params) {
+				return nextTweet(nextId);
+			}
+			@Override
+			protected void onPostExecute(twitter4j.Status result) {
+				if (result != null) {
+					mAdapter.add(result);
+					mAdapter.notifyDataSetChanged();
+					nextId = result.getInReplyToStatusId();
+					Log.d(TAG, "nextId:" + nextId);
+					if(nextId > 0){
+						loadPreviousTweet();
+					} else {
+						removeFooterView();
+						Log.d(TAG, "正常終了");
+					}
+				} else {
+					AppUtil.showToast(getActivity(), "何かがおかしいよ");
+					setFooterViewStandby();
+				}
+			}
+		};
+		loadMorePreviousTask.execute();
+	}
+	private void setFooterViewLoading() {
+		footerText.setText(getResources().getString(R.string.now_loading));
+		footerProgress.setVisibility(View.VISIBLE);
+	}
+
+	private void setFooterViewStandby() {
+		footerText.setText(getResources().getString(R.string.read_more));
+		footerProgress.setVisibility(View.GONE);
+	}
+	
+	private void removeFooterView(){
+		listView.removeFooterView(footerView);
+		footerText.setText("もうないよ");
+		footerProgress.setVisibility(View.GONE);
 		ptrListView.setMode(Mode.DISABLED);
+		ptrListView.setOnLastItemVisibleListener(null);
+		alreadyShown = true;
 	}
 
-	private void setEmptyViewStandby() {
-		if (emptyText != null && emptyProgress != null)
-			emptyText.setText(getResources().getString(R.string.tap_to_reload));
-		emptyProgress.setVisibility(View.GONE);
+	private twitter4j.Status nextTweet(long id){
+		try {
+			return mTwitter.showStatus(nextId);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
-
-	/**
-	 * 一番最初に呼ぶ奴．
-	 * 
-	 * @return
-	 */
-	abstract List<twitter4j.Status> initialStatuses();
-
-	/**
-	 * 更新するときに呼ぶやつ
-	 * 
-	 * @param sinceId
-	 * @param count
-	 * @return
-	 */
-	abstract List<twitter4j.Status> newStatuses(long sinceId, int count);
-
-	/**
-	 * 古いツイートを取得するときに呼ぶ奴
-	 * 
-	 * @param maxId
-	 * @param count
-	 * @return
-	 */
-	abstract List<twitter4j.Status> previousStatuses(long maxId, int count);
-
-	/**
-	 * 取得に失敗した時によぶやつ
-	 * 
-	 */
-	abstract void failToGetStatuses();
-
-	/**
-	 * FragmentPagerAdapterに渡してタイトルを表示するためのやつ
-	 * 
-	 * @return
-	 */
-	public abstract String getTimelineName();
 
 	@Override
 	public void onReply() {
-		// TODO Auto-generated method stub
 		Intent intent = new Intent(getActivity(),
 				TweetActivity.class);
 		intent.putExtra("replyId", StatusHolder.getStatus().getId());
@@ -480,6 +405,6 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 	}
 	@Override
 	public void onConvesation() {
-		startActivity(new Intent(getActivity(), ShowConversationActivity.class));
+		// TODO Auto-generated method stub
 	}
 }

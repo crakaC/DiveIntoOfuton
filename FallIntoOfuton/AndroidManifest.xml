@@ -33,7 +33,7 @@
             android:windowSoftInputMode="adjustResize"
              />
         <activity
-            android:name="com.crakac.ofuton.ShowConversationActivity"
+            android:name="com.crakac.ofuton.conversation.ShowConversationActivity"
              />
         <activity
             android:name="com.crakac.ofuton.acounts.AcountSelectActivity"

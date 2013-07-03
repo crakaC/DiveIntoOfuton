@@ -130,6 +130,8 @@ public class StatusDialogFragment extends DialogFragment {
 					listener.onLink(item.first);
 				} else if (type == StatusConstant.HASHTAG) {
 					listener.onHashTag(item.first);
+				} else if (type == StatusConstant.CONVERSATION){
+					listener.onConvesation();
 				}
 			}
 		});
