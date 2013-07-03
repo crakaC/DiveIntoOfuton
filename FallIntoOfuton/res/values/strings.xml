@@ -6,8 +6,8 @@
     <string name="auth">認証</string>
     <string name="acount">アカウント</string>
     <string name="add_acount">アカウントを追加</string>
-    <string name="twitter_consumer_key">h04CadIAFiN93Reymy3UZA</string>
-    <string name="twitter_consumer_secret">aHWKOld7Nni5O8gw3V5NVtRbvhS8pc9xi0eowImfCQ</string>
+    <string name="twitter_consumer_key">hogehoge</string>
+    <string name="twitter_consumer_secret">piyopiyo</string>
     <string name="twitter_oauth">Twitter認証</string>
     <string name="twitter_callback_url">crakac://twitter</string>
     <string name="dummy">xxxxxxxxxxxxxxxx</string>
