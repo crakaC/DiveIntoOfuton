@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.acounts;
+package com.crakac.ofuton.acounts;
 
 
 import twitter4j.Twitter;
@@ -8,10 +8,10 @@ import twitter4j.auth.RequestToken;
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.crakac.fallintoofuton.R;
-import com.crakac.fallintoofuton.SimpleFragmentPagerAdapter;
-import com.crakac.fallintoofuton.acounts.AcountListFragment.ClickFooterListner;
-import com.crakac.fallintoofuton.util.AppUtil;
-import com.crakac.fallintoofuton.util.TwitterUtils;
+import com.crakac.ofuton.SimpleFragmentPagerAdapter;
+import com.crakac.ofuton.acounts.AcountListFragment.ClickFooterListner;
+import com.crakac.ofuton.util.AppUtil;
+import com.crakac.ofuton.util.TwitterUtils;
 
 import android.content.Context;
 import android.content.Intent;

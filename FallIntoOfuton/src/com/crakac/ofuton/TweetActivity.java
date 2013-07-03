@@ -1,9 +1,10 @@
-package com.crakac.fallintoofuton;
+package com.crakac.ofuton;
 
-import com.crakac.fallintoofuton.status.StatusHolder;
-import com.crakac.fallintoofuton.status.TweetInfoDialogFragment;
-import com.crakac.fallintoofuton.util.AppUtil;
-import com.crakac.fallintoofuton.util.TwitterUtils;
+import com.crakac.fallintoofuton.R;
+import com.crakac.ofuton.status.StatusHolder;
+import com.crakac.ofuton.status.TweetInfoDialogFragment;
+import com.crakac.ofuton.util.AppUtil;
+import com.crakac.ofuton.util.TwitterUtils;
 
 import twitter4j.Twitter;
 import twitter4j.StatusUpdate;

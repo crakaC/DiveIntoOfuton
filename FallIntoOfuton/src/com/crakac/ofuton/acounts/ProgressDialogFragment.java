@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.acounts;
+package com.crakac.ofuton.acounts;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;

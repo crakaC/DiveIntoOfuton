@@ -1,25 +1,27 @@
-package com.crakac.fallintoofuton.timeline;
+package com.crakac.ofuton.timeline;
 
 import java.util.List;
 
-import com.crakac.fallintoofuton.util.AppUtil;
-import com.crakac.fallintoofuton.util.TwitterUtils;
-
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import com.crakac.ofuton.util.AppUtil;
+import com.crakac.ofuton.util.TwitterUtils;
 
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-public class MentionsTimelineFragment extends BaseTimelineFragment {
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class HomeTimelineFragment extends BaseTimelineFragment {
 	private Twitter mTwitter;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		Log.d("HomeTimeline","onCreateView");
 		if (mTwitter == null) {
 			mTwitter = TwitterUtils.getTwitterInstance(getActivity());
 		}
@@ -29,7 +31,7 @@ public class MentionsTimelineFragment extends BaseTimelineFragment {
 	@Override
 	List<Status> initialStatuses() {
 		try {
-			return mTwitter.getMentionsTimeline();
+			return mTwitter.getHomeTimeline();
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
@@ -39,7 +41,7 @@ public class MentionsTimelineFragment extends BaseTimelineFragment {
 	@Override
 	List<Status> newStatuses(long id, int count) {
 		try {
-			return mTwitter.getMentionsTimeline(new Paging().sinceId(
+			return mTwitter.getHomeTimeline(new Paging().sinceId(
 						id).count(count));
 		} catch (TwitterException e) {
 			e.printStackTrace();
@@ -50,7 +52,7 @@ public class MentionsTimelineFragment extends BaseTimelineFragment {
 	@Override
 	List<Status> previousStatuses(long id, int count) {
 		try {
-			return mTwitter.getMentionsTimeline(new Paging().maxId(
+			return mTwitter.getHomeTimeline(new Paging().maxId(
 					id - 1l).count(count));
 		} catch (TwitterException e) {
 			e.printStackTrace();
@@ -59,13 +61,12 @@ public class MentionsTimelineFragment extends BaseTimelineFragment {
 	}
 	@Override
 	void failToGetStatuses() {
-		AppUtil.showToast(getActivity(), "Mention‚ÌŽæ“¾‚ÉŽ¸”s‚µ‚Ü‚µ‚½");
+		AppUtil.showToast(getActivity(), "ƒ^ƒCƒ€ƒ‰ƒCƒ“‚ÌŽæ“¾‚ÉŽ¸”s‚µ‚Ü‚µ‚½");
 	}
 
-	final String title ="Mentions";
+	final String title="Home";
 	@Override
 	public String getTimelineName() {
 		return title;
 	}
-
 }

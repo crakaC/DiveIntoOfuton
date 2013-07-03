@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.util;
+package com.crakac.ofuton.util;
 
 import twitter4j.auth.AccessToken;
 

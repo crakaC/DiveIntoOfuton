@@ -1,6 +1,6 @@
-package com.crakac.fallintoofuton;
+package com.crakac.ofuton;
 
-import com.crakac.fallintoofuton.util.AppUtil;
+import com.crakac.ofuton.util.AppUtil;
 
 import android.content.Context;
 import android.view.GestureDetector.SimpleOnGestureListener;

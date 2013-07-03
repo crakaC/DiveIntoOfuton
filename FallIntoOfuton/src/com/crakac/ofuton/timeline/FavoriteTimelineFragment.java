@@ -1,9 +1,9 @@
-package com.crakac.fallintoofuton.timeline;
+package com.crakac.ofuton.timeline;
 
 import java.util.List;
 
-import com.crakac.fallintoofuton.util.AppUtil;
-import com.crakac.fallintoofuton.util.TwitterUtils;
+import com.crakac.ofuton.util.AppUtil;
+import com.crakac.ofuton.util.TwitterUtils;
 
 import twitter4j.Paging;
 import twitter4j.Status;
@@ -16,18 +16,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class ListTimelineFragment extends BaseTimelineFragment {
+public class FavoriteTimelineFragment extends BaseTimelineFragment {
 	private Twitter mTwitter;
-	private int listId;
-	private String listTitle;
-	
+	public FavoriteTimelineFragment() {
+		super();
+		Log.d("ListTimeline","Constractor");
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		Bundle bundle = getArguments();
-		listId = bundle.getInt("listId");
-		listTitle = bundle.getString("listTitle");
-		Log.d("ListTimeline","onCreateView:"+listTitle);
 		if (mTwitter == null) {
 			mTwitter = TwitterUtils.getTwitterInstance(getActivity());
 		}
@@ -37,7 +35,7 @@ public class ListTimelineFragment extends BaseTimelineFragment {
 	@Override
 	List<Status> initialStatuses() {
 		try {
-			return mTwitter.getUserListStatuses(listId, new Paging());
+			return mTwitter.getFavorites(new Paging());
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
@@ -47,8 +45,7 @@ public class ListTimelineFragment extends BaseTimelineFragment {
 	@Override
 	List<Status> newStatuses(long id, int count) {
 		try {
-			return mTwitter.getUserListStatuses(listId,new Paging().sinceId(
-						id).count(count));
+			return mTwitter.getFavorites(new Paging().sinceId(id).count(count));
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
@@ -58,7 +55,7 @@ public class ListTimelineFragment extends BaseTimelineFragment {
 	@Override
 	List<Status> previousStatuses(long id, int count) {
 		try {
-			return mTwitter.getUserListStatuses(listId, new Paging().maxId(
+			return mTwitter.getFavorites(new Paging().maxId(
 					id - 1l).count(count));
 		} catch (TwitterException e) {
 			e.printStackTrace();
@@ -67,11 +64,11 @@ public class ListTimelineFragment extends BaseTimelineFragment {
 	}
 	@Override
 	void failToGetStatuses() {
-		AppUtil.showToast(getActivity(), "ƒŠƒXƒg‚ÌŽæ“¾‚ÉŽ¸”s‚µ‚Ü‚µ‚½");
+		AppUtil.showToast(getActivity(), "‚¨‹C‚É“ü‚è‚ÌŽæ“¾‚ÉŽ¸”s‚µ‚Ü‚µ‚½");
 	}
 
 	@Override
 	public String getTimelineName() {
-		return getArguments().getString("listTitle");
+		return "Favorites";
 	}
 }

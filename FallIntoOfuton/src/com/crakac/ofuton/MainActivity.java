@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton;
+package com.crakac.ofuton;
 
 import java.util.List;
 
@@ -7,13 +7,14 @@ import twitter4j.TwitterException;
 import twitter4j.UserList;
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
-import com.crakac.fallintoofuton.acounts.AcountSelectActivity;
-import com.crakac.fallintoofuton.acounts.TwitterOauthActivity;
-import com.crakac.fallintoofuton.status.StatusHolder;
-import com.crakac.fallintoofuton.timeline.HomeTimelineFragment;
-import com.crakac.fallintoofuton.util.AppUtil;
-import com.crakac.fallintoofuton.util.TwitterList;
-import com.crakac.fallintoofuton.util.TwitterUtils;
+import com.crakac.fallintoofuton.R;
+import com.crakac.ofuton.acounts.AcountSelectActivity;
+import com.crakac.ofuton.acounts.TwitterOauthActivity;
+import com.crakac.ofuton.status.StatusHolder;
+import com.crakac.ofuton.timeline.HomeTimelineFragment;
+import com.crakac.ofuton.util.AppUtil;
+import com.crakac.ofuton.util.TwitterList;
+import com.crakac.ofuton.util.TwitterUtils;
 
 import android.content.Context;
 import android.content.Intent;

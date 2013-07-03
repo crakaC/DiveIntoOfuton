@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.util;
+package com.crakac.ofuton.util;
 
 public class TwitterList {
 	private long userId;

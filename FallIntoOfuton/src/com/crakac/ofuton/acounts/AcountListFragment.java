@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.acounts;
+package com.crakac.ofuton.acounts;
 
 import java.util.List;
 
@@ -25,12 +25,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.crakac.fallintoofuton.MainActivity;
 import com.crakac.fallintoofuton.R;
-import com.crakac.fallintoofuton.util.AppUtil;
-import com.crakac.fallintoofuton.util.TwitterUtils;
-import com.crakac.fallintoofuton.util.User;
-import com.crakac.fallintoofuton.util.UserDBAdapter;
+import com.crakac.ofuton.MainActivity;
+import com.crakac.ofuton.util.AppUtil;
+import com.crakac.ofuton.util.TwitterUtils;
+import com.crakac.ofuton.util.User;
+import com.crakac.ofuton.util.UserDBAdapter;
 
 public class AcountListFragment extends Fragment{
 	

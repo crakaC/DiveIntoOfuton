@@ -2,7 +2,7 @@
  * Created by Kosuke on 13/05/18.
  */
 
-package com.crakac.fallintoofuton.util;
+package com.crakac.ofuton.util;
 import java.util.ArrayList;
 import java.util.List;
 

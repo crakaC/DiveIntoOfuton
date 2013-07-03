@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.status;
+package com.crakac.ofuton.status;
 
 /**
  * ツイートをタップした時に出てくるダイアログに使う定数

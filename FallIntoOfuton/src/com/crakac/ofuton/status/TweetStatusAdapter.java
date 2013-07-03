@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.status;
+package com.crakac.ofuton.status;
 
 import java.text.SimpleDateFormat;
 
@@ -16,8 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.crakac.fallintoofuton.R;
-import com.crakac.fallintoofuton.util.AppUtil;
-import com.crakac.fallintoofuton.util.TwitterUtils;
+import com.crakac.ofuton.util.AppUtil;
+import com.crakac.ofuton.util.TwitterUtils;
 import com.loopj.android.image.SmartImageView;
 
 public class TweetStatusAdapter extends ArrayAdapter<twitter4j.Status> {

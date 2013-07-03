@@ -1,6 +1,7 @@
-package com.crakac.fallintoofuton;
+package com.crakac.ofuton;
 
-import com.crakac.fallintoofuton.util.AppUtil;
+import com.crakac.fallintoofuton.R;
+import com.crakac.ofuton.util.AppUtil;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;

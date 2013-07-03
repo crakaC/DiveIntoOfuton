@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.timeline;
+package com.crakac.ofuton.timeline;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -7,13 +7,13 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 import com.crakac.fallintoofuton.R;
-import com.crakac.fallintoofuton.TweetActivity;
-import com.crakac.fallintoofuton.status.StatusDialogFragment;
-import com.crakac.fallintoofuton.status.StatusHolder;
-import com.crakac.fallintoofuton.status.TweetStatusAdapter;
-import com.crakac.fallintoofuton.status.StatusDialogFragment.ActionSelectListener;
-import com.crakac.fallintoofuton.util.AppUtil;
-import com.crakac.fallintoofuton.util.TwitterUtils;
+import com.crakac.ofuton.TweetActivity;
+import com.crakac.ofuton.status.StatusDialogFragment;
+import com.crakac.ofuton.status.StatusHolder;
+import com.crakac.ofuton.status.TweetStatusAdapter;
+import com.crakac.ofuton.status.StatusDialogFragment.ActionSelectListener;
+import com.crakac.ofuton.util.AppUtil;
+import com.crakac.ofuton.util.TwitterUtils;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;

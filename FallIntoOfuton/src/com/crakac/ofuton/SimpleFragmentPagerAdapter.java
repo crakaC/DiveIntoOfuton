@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton;
+package com.crakac.ofuton;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

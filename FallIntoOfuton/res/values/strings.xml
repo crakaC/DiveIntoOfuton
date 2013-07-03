@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Fall into the Ofuton</string>
+    <string name="app_name">Dive into Ofuton</string>
     <string name="setting">設定</string>
     <string name="auth">認証</string>
     <string name="acount">アカウント</string>

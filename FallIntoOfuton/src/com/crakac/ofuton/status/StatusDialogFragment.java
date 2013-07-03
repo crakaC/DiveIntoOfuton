@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.status;
+package com.crakac.ofuton.status;
 
 import java.util.ArrayList;
 

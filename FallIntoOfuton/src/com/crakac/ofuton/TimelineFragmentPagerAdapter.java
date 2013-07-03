@@ -1,12 +1,12 @@
-package com.crakac.fallintoofuton;
+package com.crakac.ofuton;
 
 import java.util.ArrayList;
 
-import com.crakac.fallintoofuton.timeline.BaseTimelineFragment;
-import com.crakac.fallintoofuton.timeline.FavoriteTimelineFragment;
-import com.crakac.fallintoofuton.timeline.HomeTimelineFragment;
-import com.crakac.fallintoofuton.timeline.ListTimelineFragment;
-import com.crakac.fallintoofuton.timeline.MentionsTimelineFragment;
+import com.crakac.ofuton.timeline.BaseTimelineFragment;
+import com.crakac.ofuton.timeline.FavoriteTimelineFragment;
+import com.crakac.ofuton.timeline.HomeTimelineFragment;
+import com.crakac.ofuton.timeline.ListTimelineFragment;
+import com.crakac.ofuton.timeline.MentionsTimelineFragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

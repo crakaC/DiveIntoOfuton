@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.status;
+package com.crakac.ofuton.status;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.crakac.fallintoofuton.util.TwitterUtils;
+import com.crakac.ofuton.util.TwitterUtils;
 
 /**
  * アクティビティ間でツイート内容(status)を使いまわすためのもの

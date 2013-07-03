@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.util;
+package com.crakac.ofuton.util;
 
 import android.content.Context;
 import android.widget.Toast;

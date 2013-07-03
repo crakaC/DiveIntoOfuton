@@ -1,4 +1,4 @@
-package com.crakac.fallintoofuton.util;
+package com.crakac.ofuton.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

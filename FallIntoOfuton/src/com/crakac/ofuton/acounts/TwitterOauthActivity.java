@@ -1,12 +1,12 @@
-package com.crakac.fallintoofuton.acounts;
+package com.crakac.ofuton.acounts;
 
-import com.crakac.fallintoofuton.MainActivity;
 import com.crakac.fallintoofuton.R;
 import com.crakac.fallintoofuton.R.id;
 import com.crakac.fallintoofuton.R.layout;
 import com.crakac.fallintoofuton.R.string;
-import com.crakac.fallintoofuton.util.AppUtil;
-import com.crakac.fallintoofuton.util.TwitterUtils;
+import com.crakac.ofuton.MainActivity;
+import com.crakac.ofuton.util.AppUtil;
+import com.crakac.ofuton.util.TwitterUtils;
 
 import android.app.Activity;
 import android.content.Intent;
