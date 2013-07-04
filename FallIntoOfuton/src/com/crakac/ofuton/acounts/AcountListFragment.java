@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,8 +37,9 @@ import com.loopj.android.image.SmartImageView;
 public class AcountListFragment extends Fragment{
 	
 	private static final String TAG = AcountListFragment.class.getSimpleName();
-	ClickFooterListner listener;
-	AcountAdapter mAdapter;
+	private ClickFooterListner listener;
+	private AcountAdapter mAdapter;
+	private FragmentManager manager;
 
 	public interface ClickFooterListner{
 		public void onClickFooter();
@@ -47,6 +49,7 @@ public class AcountListFragment extends Fragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		Log.d(TAG, "onCreateView");
+		manager = getActivity().getSupportFragmentManager();
 		View view = inflater.inflate(R.layout.acount_listfragment, container, false);
 		mAdapter = new AcountAdapter(getActivity());
 		ListView lv = (ListView)view.findViewById(R.id.acountList);
@@ -120,7 +123,28 @@ public class AcountListFragment extends Fragment{
 
 			remove.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					TwitterUtils.removeUser(item);
+					AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+						ProgressDialogFragment dialog;
+						@Override
+						protected void onPreExecute() {
+							dialog = ProgressDialogFragment.newInstance("çÌèúíÜ");
+							dialog.show(manager, "deleting");
+						}
+
+						@Override
+						protected Void doInBackground(Void... params) {
+							TwitterUtils.removeUser(mContext, item);
+							return null;
+						}
+
+						@Override
+						protected void onPostExecute(Void result) {
+							dialog.dismiss();
+							mAdapter.clear();
+							reloadAcounts();
+						}
+					};
+					task.execute();
 				}
 			});
 			return convertView;

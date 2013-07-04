@@ -125,28 +125,21 @@ public class UserDBAdapter {
 	public Cursor getAllUsers(){
 		return db.query(USER_TABLE, null, null, null, null, null, null);
 	}
-
-	public Cursor getLists(long userId){
-		String selection ="UserID = ?";
-		String[] selectionArgs = { String.valueOf(userId) };
-		return db.query(LIST_TABLE, null, selection, selectionArgs, null, null, null);
-	}
 	
+	public boolean userExists(long userId){
+		String[] columns = { COL_USERID };
+		Cursor c = db.query(USER_TABLE, columns, COL_USERID+"="+userId, null, null, null, null);
+		return c.moveToFirst();
+	}
+
 	public boolean deleteUser(long userId){
 		return db.delete(USER_TABLE, COL_USERID + "=" + userId, null ) > 0;
 	}
 
-	public boolean deleteList(int listId){
-		return db.delete(LIST_TABLE, COL_LIST_ID + "=" + listId, null) > 0;
-	}
-	
-	public boolean deleteList(long userId){
-		return db.delete(LIST_TABLE, COL_USERID + "=" + userId, null) > 0;		
-	}
-
 	/**
-	 * データベースにユーザーを追加する．すでにUserIDがある場合は削除して再追加する
+	 * ユーザーを追加する.追加する前に，すでにユーザーが存在していないかチェックすること．
 	 * @param user
+	 * @return 追加成功時 true, 失敗 false
 	 */
 	public void saveUser(User user){
 		deleteUser(user.getUserId());
@@ -155,9 +148,32 @@ public class UserDBAdapter {
 		values.put(COL_SCREEN_NAME, user.getScreenName());
 		values.put(COL_ICON_URL, user.getIconUrl());
 		values.put(COL_TOKEN, user.getToken());
-		values.put(COL_TOKEN_SECRET, user.getTokenSecret());		
+		values.put(COL_TOKEN_SECRET, user.getTokenSecret());
 		db.insertOrThrow(USER_TABLE, null, values);
 	}
+
+
+	public void setCurrentUser(User user) {
+		//前回までのcurrent userをただのuserにする
+		ContentValues values = new ContentValues();
+		values.put(COL_IS_CURRENT, -1);
+		db.update(USER_TABLE, values, COL_IS_CURRENT + "=1", null);
+		values = new ContentValues();
+		values.put(COL_IS_CURRENT, 1);
+		db.update(USER_TABLE, values, COL_USERID + "=" +user.getUserId(), null);
+	}
+	public Cursor getCurrentUser(){
+		return db.query(USER_TABLE, null, COL_IS_CURRENT+"=1", null, null, null, null);
+		//COL_IS_CURRENTは-1でfalse, 1がtrueってことにしてる
+	}
+	
+	
+	public Cursor getLists(long userId){
+		String selection ="UserID = ?";
+		String[] selectionArgs = { String.valueOf(userId) };
+		return db.query(LIST_TABLE, null, selection, selectionArgs, null, null, null);
+	}
+
 	public void saveList(TwitterList list){
 		deleteList(list.getListId());
 		ContentValues values = new ContentValues();
@@ -167,21 +183,21 @@ public class UserDBAdapter {
 		values.put(COL_LIST_LONGNAME, list.getFullName());
 		db.insertOrThrow(LIST_TABLE, null, values);
 	}
-
-	public void setCurrentUser(User user) {
-		int rows;
-		//前回までのcurrent userをただのuserにする
-		ContentValues values = new ContentValues();
-		values.put(COL_IS_CURRENT, -1);
-		rows = db.update(USER_TABLE, values, COL_IS_CURRENT + "=1", null);
-		Log.d(TAG, rows + "rows, current -> not current");
-		values = new ContentValues();
-		values.put(COL_IS_CURRENT, 1);
-		rows = db.update(USER_TABLE, values, COL_USERID + "=" +user.getUserId(), null);
-		Log.d(TAG, rows + "rows, not current -> current");
+	/**
+	 * 指定したリストIDのリストを消す．あまり使い道はないかも
+	 * @param listId
+	 * @return
+	 */
+	public boolean deleteList(int listId){
+		return db.delete(LIST_TABLE, COL_LIST_ID + "=" + listId, null) > 0;
 	}
-	public Cursor getCurrentUser(){
-		return db.query(USER_TABLE, null, COL_IS_CURRENT+"=1", null, null, null, null);
-		//COL_IS_CURRENTは-1でfalse, 1がtrueってことにしてる
+	
+	/**
+	 * ユーザーIDのリストを全部消す．アカウントを消した時に呼ぶといいと思う．
+	 * @param userId
+	 * @return
+	 */
+	public boolean deleteList(long userId){
+		return db.delete(LIST_TABLE, COL_USERID + "=" + userId, null) > 0;		
 	}
 }

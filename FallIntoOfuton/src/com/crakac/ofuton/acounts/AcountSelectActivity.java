@@ -124,7 +124,7 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 	 * 
 	 */
 	private void successOAuth(AccessToken accessToken){
-		AsyncTask<AccessToken, Void, Void> task = new AsyncTask<AccessToken, Void, Void>() {
+		AsyncTask<AccessToken, Void, Boolean> task = new AsyncTask<AccessToken, Void, Boolean>() {
 			
 			@Override
 			protected void onPreExecute() {
@@ -133,18 +133,20 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 			}
 
 			@Override
-			protected Void doInBackground(AccessToken... params) {
+			protected Boolean doInBackground(AccessToken... params) {
 				TwitterUtils.storeAccessToken(mContext, params[0]);
-				TwitterUtils.addUser(mContext);
-				return null;
+				return TwitterUtils.addUser(mContext);
 			}
 
 			@Override
-			protected void onPostExecute(Void result) {
+			protected void onPostExecute(Boolean result) {
 				progressDialog.dismiss();
-				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-				finish();
-				startActivity(getIntent());
+				if(result){
+					finish();
+					startActivity(getIntent());
+				} else {
+					AppUtil.showToast(mContext, "Ç∑Ç≈Ç…ìoò^Ç≥ÇÍÇƒÇ¢Ç‹Ç∑");
+				}
 			}
 		};
 		task.execute(accessToken);
@@ -180,7 +182,7 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 				if (url != null) {
 					Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse(url));
 					startActivity(intent);
-					//finish();
+					//finish();//finishÇ∑ÇÈÇ∆RequestoTokenÇ™éÄÇ ÇÃÇ≈ñ≥óùÇ≈Ç∑ÇÀÅD
 				} else {
 					// mistake
 				}

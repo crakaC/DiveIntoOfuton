@@ -27,9 +27,6 @@ public class TwitterUtils {
 	private static final String TOKEN = "token";
 	private static final String TOKEN_SECRET = "tokenSecret";
 	private static final String PREF_NAME = "accessToken";
-	private static final String USER_INFO = "userInfo";
-	private static final String USER_ID = "userId";
-	private static final String USER_SCREEN_NAME = "userScreenName";
 
 	/**
 	 *  Get AsyncTwitter instance.
@@ -139,11 +136,15 @@ public class TwitterUtils {
 		}
 	}
 
-	public static void removeUser(User item) {
-		//TODO 何とかして，ユーザー情報を消そう
+	public static void removeUser(Context context, User user) {
+		UserDBAdapter dbAdapter = new UserDBAdapter(context);
+		dbAdapter.open();
+		dbAdapter.deleteUser(user.getUserId());
+		dbAdapter.close();
 	}
 
-	public static void addUser(Context context){
+	public static boolean addUser(Context context){
+		boolean result = false;
 		Twitter tw = getTwitterInstanceForAuth(context);
 		tw.setOAuthAccessToken(loadAccessToken(context));
 		UserDBAdapter dbAdapter = new UserDBAdapter(context);
@@ -151,6 +152,9 @@ public class TwitterUtils {
 		twitter4j.User user;
 		try {
 			user = tw.showUser(tw.getId());
+			if(dbAdapter.userExists(user.getId())){
+				return false;
+			}
 			dbAdapter.saveUser(new User(
 					user.getId(),
 					user.getScreenName(), 
@@ -158,12 +162,14 @@ public class TwitterUtils {
 					loadAccessToken(context).getToken(),
 					loadAccessToken(context).getTokenSecret(),
 					false));
+			result = true;
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
 		dbAdapter.close();
+		return result;
 	}
 	public static List<User> getUsers(Context context){
 		List<User> users = new ArrayList<User>();
