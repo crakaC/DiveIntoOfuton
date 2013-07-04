@@ -80,7 +80,8 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@Override
-	protected void onResume() {
+	protected void onRestart() {
+		Log.d(TAG, "onRestart()");
 		if(ListObserver.isChanged()){
 			ListObserver.init();
 			finish();

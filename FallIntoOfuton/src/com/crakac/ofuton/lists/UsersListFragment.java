@@ -1,7 +1,7 @@
 package com.crakac.ofuton.lists;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.TreeSet;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -35,7 +35,7 @@ public class UsersListFragment extends Fragment{
 	private static final String TAG = UsersListFragment.class.getSimpleName();
 	private ListAdapter mAdapter;
 	private FragmentManager manager;
-	private HashSet<Integer> currentListIds, initialListIds;
+	private TreeSet<Integer> currentListIds, initialListIds;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,11 +43,11 @@ public class UsersListFragment extends Fragment{
 		Log.d(TAG, "onCreateView");
 		
 		//ç≈èâÇÃéûì_Ç≈ÇÃÉäÉXÉgÇÃIDàÍóóÇÇŒ
-		initialListIds = new HashSet<Integer>();
+		initialListIds = new TreeSet<Integer>();
 		for(TwitterList list : TwitterUtils.getCurrentUserLists(getActivity())){
 			initialListIds.add(list.getListId());
 		}
-		currentListIds = new HashSet<Integer>(initialListIds);
+		currentListIds = new TreeSet<Integer>(initialListIds);
 		ListObserver.init();
 		
 		manager = getActivity().getSupportFragmentManager();
@@ -70,15 +70,14 @@ public class UsersListFragment extends Fragment{
 				} else {
 					addList();
 				}
-				if(listChanged()){
+			}
+
+			private void checkListSelectionDiffs() {
+				if(currentListIds.size() != initialListIds.size() || !currentListIds.containsAll(initialListIds)){
 					ListObserver.changed();
 				} else {
 					ListObserver.notChanged();
 				}
-			}
-
-			private boolean listChanged() {
-				return currentListIds.containsAll(initialListIds) && initialListIds.containsAll(currentListIds);
 			}
 
 			private void addList() {
@@ -95,6 +94,7 @@ public class UsersListFragment extends Fragment{
 						if(result){
 							checkMark.setVisibility(View.VISIBLE);
 							currentListIds.add(list.getListId());
+							checkListSelectionDiffs();
 						} else {
 							AppUtil.showToast(getActivity(), getActivity().getString(R.string.something_wrong));
 						}
@@ -117,6 +117,7 @@ public class UsersListFragment extends Fragment{
 						if(result){
 							checkMark.setVisibility(View.INVISIBLE);
 							currentListIds.remove(Integer.valueOf(list.getListId()));
+							checkListSelectionDiffs();
 						} else {
 							AppUtil.showToast(getActivity(), getActivity().getString(R.string.something_wrong));
 						}
@@ -131,11 +132,9 @@ public class UsersListFragment extends Fragment{
 	
 	private class ListAdapter extends ArrayAdapter<TwitterList>{
 		private LayoutInflater mInflater;
-		private Context mContext;
 		
 		public ListAdapter(Context context) {
 			super(context, android.R.layout.simple_list_item_1);
-			mContext = context;
 			mInflater = (LayoutInflater) context
 			.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 		}
