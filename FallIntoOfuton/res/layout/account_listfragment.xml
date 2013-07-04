@@ -3,7 +3,7 @@
     android:layout_height="match_parent" >
 
     <ListView
-        android:id="@+id/acountList"
+        android:id="@+id/accountList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@color/dark_gray"

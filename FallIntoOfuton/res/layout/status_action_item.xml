@@ -4,13 +4,13 @@
     android:layout_height="wrap_content"
     android:background="@color/status_action_list"
     android:gravity="center_vertical"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:padding="6dp" >
 
     <ImageView
         android:id="@+id/action_icon"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_margin="6dp"
         android:src="@android:drawable/ic_menu_edit" />
 
     <TextView
@@ -21,6 +21,6 @@
         android:textColor="@android:color/white"
         android:textSize="15sp"
         android:textStyle="bold"
-        android:layout_marginLeft="6dp" />
+        android:layout_marginLeft="12dp" />
 
 </LinearLayout>

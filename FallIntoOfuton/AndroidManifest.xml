@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.crakac.ofuton.acounts.TwitterOauthActivity"
+            android:name="com.crakac.ofuton.accounts.TwitterOauthActivity"
             android:launchMode="singleTask" >
         </activity>
         <activity
@@ -36,7 +36,7 @@
             android:name="com.crakac.ofuton.conversation.ShowConversationActivity"
              />
         <activity
-            android:name="com.crakac.ofuton.acounts.AcountSelectActivity"
+            android:name="com.crakac.ofuton.accounts.AccountSelectActivity"
                     android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

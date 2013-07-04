@@ -19,12 +19,4 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/pagerTabStrip" />
 
-
-    <ImageView
-        android:id="@+id/tweetEveryWhere"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/ic_compose_everywhere" />
 </RelativeLayout>

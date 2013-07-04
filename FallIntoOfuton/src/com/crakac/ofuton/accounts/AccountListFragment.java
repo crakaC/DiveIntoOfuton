@@ -1,4 +1,4 @@
-package com.crakac.ofuton.acounts;
+package com.crakac.ofuton.accounts;
 
 import java.util.List;
 
@@ -34,9 +34,9 @@ import com.crakac.ofuton.util.User;
 import com.crakac.ofuton.util.UserDBAdapter;
 import com.loopj.android.image.SmartImageView;
 
-public class AcountListFragment extends Fragment{
+public class AccountListFragment extends Fragment{
 	
-	private static final String TAG = AcountListFragment.class.getSimpleName();
+	private static final String TAG = AccountListFragment.class.getSimpleName();
 	private ClickFooterListner listener;
 	private AcountAdapter mAdapter;
 	private FragmentManager manager;
@@ -50,11 +50,11 @@ public class AcountListFragment extends Fragment{
 			Bundle savedInstanceState) {
 		Log.d(TAG, "onCreateView");
 		manager = getActivity().getSupportFragmentManager();
-		View view = inflater.inflate(R.layout.acount_listfragment, container, false);
+		View view = inflater.inflate(R.layout.account_listfragment, container, false);
 		mAdapter = new AcountAdapter(getActivity());
-		ListView lv = (ListView)view.findViewById(R.id.acountList);
+		ListView lv = (ListView)view.findViewById(R.id.accountList);
 		listener = (ClickFooterListner)getActivity();
-		View footerView = inflater.inflate(R.layout.acount_footer, null);
+		View footerView = inflater.inflate(R.layout.account_footer, null);
 		footerView.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				listener.onClickFooter();
@@ -103,12 +103,12 @@ public class AcountListFragment extends Fragment{
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			if(convertView == null){
-				convertView = mInflater.inflate(R.layout.acount_listitem, parent, false);
+				convertView = mInflater.inflate(R.layout.account_listitem, parent, false);
 			}
-			SmartImageView icon = (SmartImageView) convertView.findViewById(R.id.acountIcon);
+			SmartImageView icon = (SmartImageView) convertView.findViewById(R.id.accountIcon);
 			ImageView check = (ImageView) convertView.findViewById(R.id.checkMark);
 			ImageView remove = (ImageView) convertView.findViewById(R.id.remove);
-			TextView screenName = (TextView) convertView.findViewById(R.id.acountName);
+			TextView screenName = (TextView) convertView.findViewById(R.id.accountName);
 
 			final User item = getItem(position);
 			icon.setImageUrl(item.getIconUrl());

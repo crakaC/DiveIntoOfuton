@@ -203,8 +203,13 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 	}
 
 	private void loadPreviousTweet() {
+		//画面から起動するのはこっちのタスクだけなので，読込中かどうかはこっちのメソッドでだけ判定すれば良い．
 		if (loadPreviousTask != null
 				&& loadPreviousTask.getStatus() == AsyncTask.Status.RUNNING) {
+			return;
+		}
+		if (loadMorePreviousTask != null
+				&& loadMorePreviousTask.getStatus() == AsyncTask.Status.RUNNING) {
 			return;
 		}
 		loadPreviousTask = new AsyncTask<Void, Void, Status>() {
@@ -237,10 +242,6 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 	}
 
 	private void loadMorePreviousTweet() {
-		if (loadMorePreviousTask != null
-				&& loadMorePreviousTask.getStatus() == AsyncTask.Status.RUNNING) {
-			return;
-		}
 		loadMorePreviousTask = new AsyncTask<Void, Void, Status>() {
 			
 			@Override

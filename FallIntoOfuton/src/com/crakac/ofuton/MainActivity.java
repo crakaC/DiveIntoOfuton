@@ -8,8 +8,7 @@ import twitter4j.UserList;
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.crakac.fallintoofuton.R;
-import com.crakac.ofuton.acounts.AcountSelectActivity;
-import com.crakac.ofuton.acounts.TwitterOauthActivity;
+import com.crakac.ofuton.accounts.AccountSelectActivity;
 import com.crakac.ofuton.status.StatusHolder;
 import com.crakac.ofuton.timeline.HomeTimelineFragment;
 import com.crakac.ofuton.util.AppUtil;
@@ -47,7 +46,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (!TwitterUtils.existCurrentUser(this)) {
-			Intent intent = new Intent(this, AcountSelectActivity.class);
+			Intent intent = new Intent(this, AccountSelectActivity.class);
 			startActivity(intent);
 			finish();
 		} else {
@@ -147,7 +146,7 @@ public class MainActivity extends FragmentActivity {
 			setLists();
 			break;
 		case R.id.menu_acount:
-			Intent acountSetting = new Intent(this, AcountSelectActivity.class);
+			Intent acountSetting = new Intent(this, AccountSelectActivity.class);
 			startActivity(acountSetting);
 		}
 		return super.onOptionsItemSelected(item);

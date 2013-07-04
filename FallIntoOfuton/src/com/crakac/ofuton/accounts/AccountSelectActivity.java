@@ -1,4 +1,4 @@
-package com.crakac.ofuton.acounts;
+package com.crakac.ofuton.accounts;
 
 
 import twitter4j.Twitter;
@@ -9,7 +9,7 @@ import twitter4j.auth.RequestToken;
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.crakac.fallintoofuton.R;
 import com.crakac.ofuton.SimpleFragmentPagerAdapter;
-import com.crakac.ofuton.acounts.AcountListFragment.ClickFooterListner;
+import com.crakac.ofuton.accounts.AccountListFragment.ClickFooterListner;
 import com.crakac.ofuton.util.AppUtil;
 import com.crakac.ofuton.util.TwitterUtils;
 
@@ -26,12 +26,12 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 
-public class AcountSelectActivity extends FragmentActivity implements ClickFooterListner{
+public class AccountSelectActivity extends FragmentActivity implements ClickFooterListner{
 	private Twitter mTwitter;
 	private RequestToken mRequestToken;
 	private String mCallbackURL;
 	private static final String REQUEST_TOKEN = "request_token";
-	private static final String TAG = AcountSelectActivity.class.getSimpleName();
+	private static final String TAG = AccountSelectActivity.class.getSimpleName();
 	private Context mContext;
 
 	private ViewPager pager;
@@ -39,7 +39,7 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 	private SimpleFragmentPagerAdapter adapter;
 	private ProgressDialogFragment progressDialog;
 	
-	private AcountListFragment mFragment;
+	private AccountListFragment mFragment;
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -56,9 +56,7 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 		super.onCreate(savedInstanceState);
 		mContext = this;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_main);
-		ImageView iv = (ImageView)findViewById(R.id.tweetEveryWhere);
-		iv.setVisibility(View.GONE);
+		setContentView(R.layout.account_activity);
 		
 		adapter = new SimpleFragmentPagerAdapter(getSupportFragmentManager());
 		adapter.setTitle("Acount");
@@ -72,7 +70,7 @@ public class AcountSelectActivity extends FragmentActivity implements ClickFoote
 		
 		mTwitter = TwitterUtils.getTwitterInstanceForAuth(this);
 		mCallbackURL = getString(R.string.twitter_callback_url);
-		mFragment = new AcountListFragment();
+		mFragment = new AccountListFragment();
 		adapter.setFragment(mFragment);
 	}
 

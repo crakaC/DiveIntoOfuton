@@ -6,7 +6,7 @@
     android:padding="6dp" >
 
     <com.loopj.android.image.SmartImageView
-        android:id="@+id/acountIcon"
+        android:id="@+id/accountIcon"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_alignParentLeft="true"
@@ -14,11 +14,11 @@
         android:src="@drawable/ic_launcher" />
     
     <TextView
-        android:id="@+id/acountName"
+        android:id="@+id/accountName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/acountIcon"
+        android:layout_toRightOf="@+id/accountIcon"
         android:layout_marginLeft="12dp"
         android:text="@string/dummy"
         android:gravity="center_vertical"
