@@ -11,6 +11,7 @@ import com.crakac.fallintoofuton.R;
 import com.crakac.ofuton.SimpleFragmentPagerAdapter;
 import com.crakac.ofuton.accounts.AccountListFragment.ClickFooterListner;
 import com.crakac.ofuton.util.AppUtil;
+import com.crakac.ofuton.util.ProgressDialogFragment;
 import com.crakac.ofuton.util.TwitterUtils;
 
 import android.content.Context;
@@ -59,7 +60,7 @@ public class AccountSelectActivity extends FragmentActivity implements ClickFoot
 		setContentView(R.layout.account_activity);
 		
 		adapter = new SimpleFragmentPagerAdapter(getSupportFragmentManager());
-		adapter.setTitle("Acount");
+		adapter.setTitle(getString(R.string.account_title));
 		
 		pager = (ViewPager) findViewById(R.id.pager);
 		pager.setAdapter(adapter);

@@ -4,7 +4,8 @@
     <string name="app_name">Dive into Ofuton</string>
     <string name="setting">設定</string>
     <string name="auth">認証</string>
-    <string name="acount">アカウント</string>
+    <string name="account">アカウント</string>
+    <string name="account_title">Accounts</string>
     <string name="add_account">アカウントを追加</string>
     <string name="twitter_consumer_key">h04CadIAFiN93Reymy3UZA</string>
     <string name="twitter_consumer_secret">aHWKOld7Nni5O8gw3V5NVtRbvhS8pc9xi0eowImfCQ</string>
@@ -23,4 +24,8 @@
     <string name="read_more">もっと読む</string>
     <string name="tap_to_reload">画面をタップして再読み込み</string>
     <string name="now_loading">読み込み中…</string>
+    <string name="loading_list">リストを取得しています…</string>
+    <string name="list_title">Lists</string>
+    <string name="list">リスト</string>
+    <string name="something_wrong">何かがおかしいよ</string>
 </resources>

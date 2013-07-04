@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.crakac.fallintoofuton.R;
 import com.crakac.ofuton.MainActivity;
 import com.crakac.ofuton.util.AppUtil;
+import com.crakac.ofuton.util.ProgressDialogFragment;
 import com.crakac.ofuton.util.TwitterUtils;
 import com.crakac.ofuton.util.User;
 import com.crakac.ofuton.util.UserDBAdapter;
@@ -50,9 +51,9 @@ public class AccountListFragment extends Fragment{
 			Bundle savedInstanceState) {
 		Log.d(TAG, "onCreateView");
 		manager = getActivity().getSupportFragmentManager();
-		View view = inflater.inflate(R.layout.account_listfragment, container, false);
+		View view = inflater.inflate(R.layout.base_listfragment, container, false);
 		mAdapter = new AcountAdapter(getActivity());
-		ListView lv = (ListView)view.findViewById(R.id.accountList);
+		ListView lv = (ListView)view.findViewById(R.id.listView);
 		listener = (ClickFooterListner)getActivity();
 		View footerView = inflater.inflate(R.layout.account_footer, null);
 		footerView.setOnClickListener(new OnClickListener() {
@@ -154,7 +155,7 @@ public class AccountListFragment extends Fragment{
 	public void reloadAcounts() {
 		Log.d(TAG, "called reloadAcounts");
 		mAdapter.clear();
-		List<User> users = TwitterUtils.getUsers(getActivity());
+		List<User> users = TwitterUtils.getAllUsers(getActivity());
 		for(User user : users){
 			mAdapter.add(user);
 		}

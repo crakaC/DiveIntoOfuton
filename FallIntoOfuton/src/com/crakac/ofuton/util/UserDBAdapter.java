@@ -166,25 +166,24 @@ public class UserDBAdapter {
 		return db.query(USER_TABLE, null, COL_IS_CURRENT+"=1", null, null, null, null);
 		//COL_IS_CURRENTは-1でfalse, 1がtrueってことにしてる
 	}
-	
-	
+
 	public Cursor getLists(long userId){
 		String selection ="UserID = ?";
 		String[] selectionArgs = { String.valueOf(userId) };
-		return db.query(LIST_TABLE, null, selection, selectionArgs, null, null, null);
+		return db.query(LIST_TABLE, null, selection, selectionArgs, null, null, COL_LIST_ID + " desc");
 	}
 
-	public void saveList(TwitterList list){
+	public boolean saveList(TwitterList list){
 		deleteList(list.getListId());
 		ContentValues values = new ContentValues();
 		values.put(COL_USERID, list.getUserId());
 		values.put(COL_LIST_ID, list.getListId());
 		values.put(COL_LIST_NAME, list.getName());
 		values.put(COL_LIST_LONGNAME, list.getFullName());
-		db.insertOrThrow(LIST_TABLE, null, values);
+		return db.insertOrThrow(LIST_TABLE, null, values) > 0;
 	}
 	/**
-	 * 指定したリストIDのリストを消す．あまり使い道はないかも
+	 * 指定したリストIDのリストを消す．
 	 * @param listId
 	 * @return
 	 */
@@ -193,7 +192,7 @@ public class UserDBAdapter {
 	}
 	
 	/**
-	 * ユーザーIDのリストを全部消す．アカウントを消した時に呼ぶといいと思う．
+	 * ユーザーIDのリストを全部消す．
 	 * @param userId
 	 * @return
 	 */

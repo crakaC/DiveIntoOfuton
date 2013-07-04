@@ -70,7 +70,7 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);// インスタンスを保持　画面が回転しても取得したTweetが消えなくなる
-		setHasOptionsMenu(true);//オプションメニューをフラグメントから追加
+		//setHasOptionsMenu(true);//オプションメニューをフラグメントから追加
 	}
 
 	@Override

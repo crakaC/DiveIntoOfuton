@@ -171,48 +171,6 @@ public class TwitterUtils {
 		dbAdapter.close();
 		return result;
 	}
-	public static List<User> getUsers(Context context){
-		List<User> users = new ArrayList<User>();
-		UserDBAdapter dbAdapter = new UserDBAdapter(context);
-		dbAdapter.open();
-		Cursor c = dbAdapter.getAllUsers();
-		while(c.moveToNext()){
-			users.add(new User(
-					c.getLong(c.getColumnIndex(UserDBAdapter.COL_USERID)),
-					c.getString(c.getColumnIndex(UserDBAdapter.COL_SCREEN_NAME)),
-					c.getString(c.getColumnIndex(UserDBAdapter.COL_ICON_URL)),
-					c.getString(c.getColumnIndex(UserDBAdapter.COL_TOKEN)),
-					c.getString(c.getColumnIndex(UserDBAdapter.COL_TOKEN_SECRET)),
-					c.getInt(c.getColumnIndex(UserDBAdapter.COL_IS_CURRENT)) > 0
-					));
-		}
-		dbAdapter.close();
-		return users;
-	}
-
-	public static void addList(Context context, TwitterList list) {
-		UserDBAdapter dbAdapter = new UserDBAdapter(context);
-		dbAdapter.open();
-		dbAdapter.saveList(list);
-		dbAdapter.close();
-	}
-
-	public static List<TwitterList> getLists(Context context) {
-		List<TwitterList> list = new ArrayList<TwitterList>();
-		UserDBAdapter dbAdapter = new UserDBAdapter(context);
-		dbAdapter.open();
-		Cursor c = dbAdapter.getLists(getCurrentUser(context).getUserId());
-		while(c.moveToNext()){
-			list.add(new TwitterList(
-					c.getLong(c.getColumnIndex(UserDBAdapter.COL_USERID)),
-					c.getInt(c.getColumnIndex(UserDBAdapter.COL_LIST_ID)),
-					c.getString(c.getColumnIndex(UserDBAdapter.COL_LIST_NAME)),
-					c.getString(c.getColumnIndex(UserDBAdapter.COL_LIST_LONGNAME))
-					));
-		}
-		dbAdapter.close();//cursorを使用するより先にcloseするとinvalid statement in fillWindow()とかいうエラーが出る
-		return list;
-	}
 
 	public static void setCurrentUser(Context context, User user) {
 		//DB上に情報を保存
@@ -243,5 +201,59 @@ public class TwitterUtils {
 
 	public static boolean existCurrentUser(Context context) {
 		return getCurrentUser(context) != null;
+	}
+	
+	public static List<User> getAllUsers(Context context){
+		List<User> users = new ArrayList<User>();
+		UserDBAdapter dbAdapter = new UserDBAdapter(context);
+		dbAdapter.open();
+		Cursor c = dbAdapter.getAllUsers();
+		while(c.moveToNext()){
+			users.add(new User(
+					c.getLong(c.getColumnIndex(UserDBAdapter.COL_USERID)),
+					c.getString(c.getColumnIndex(UserDBAdapter.COL_SCREEN_NAME)),
+					c.getString(c.getColumnIndex(UserDBAdapter.COL_ICON_URL)),
+					c.getString(c.getColumnIndex(UserDBAdapter.COL_TOKEN)),
+					c.getString(c.getColumnIndex(UserDBAdapter.COL_TOKEN_SECRET)),
+					c.getInt(c.getColumnIndex(UserDBAdapter.COL_IS_CURRENT)) > 0
+					));
+		}
+		dbAdapter.close();
+		return users;
+	}
+
+	public static boolean addList(Context context, TwitterList list) {
+		boolean result;
+		UserDBAdapter dbAdapter = new UserDBAdapter(context);
+		dbAdapter.open();
+		result = dbAdapter.saveList(list);
+		dbAdapter.close();
+		return result;
+	}
+	
+	public static boolean removeList(Context context, TwitterList list) {
+		boolean result;
+		UserDBAdapter dbAdapter = new UserDBAdapter(context);
+		dbAdapter.open();
+		result = dbAdapter.deleteList(list.getListId());
+		dbAdapter.close();
+		return result;
+	}
+
+	public static List<TwitterList> getCurrentUserLists(Context context) {
+		List<TwitterList> list = new ArrayList<TwitterList>();
+		UserDBAdapter dbAdapter = new UserDBAdapter(context);
+		dbAdapter.open();
+		Cursor c = dbAdapter.getLists(getCurrentUser(context).getUserId());
+		while(c.moveToNext()){
+			list.add(new TwitterList(
+					c.getLong(c.getColumnIndex(UserDBAdapter.COL_USERID)),
+					c.getInt(c.getColumnIndex(UserDBAdapter.COL_LIST_ID)),
+					c.getString(c.getColumnIndex(UserDBAdapter.COL_LIST_NAME)),
+					c.getString(c.getColumnIndex(UserDBAdapter.COL_LIST_LONGNAME))
+					));
+		}
+		dbAdapter.close();//cursorを使用するより先にcloseするとinvalid statement in fillWindow()とかいうエラーが出る
+		return list;
 	}
 }
