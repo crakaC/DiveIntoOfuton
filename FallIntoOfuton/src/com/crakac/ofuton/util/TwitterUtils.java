@@ -18,9 +18,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.webkit.WebChromeClient.CustomViewCallback;
 
 public class TwitterUtils {
 	private static final String TAG = TwitterUtils.class.getSimpleName();

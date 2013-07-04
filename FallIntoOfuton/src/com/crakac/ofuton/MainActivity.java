@@ -2,23 +2,17 @@ package com.crakac.ofuton;
 
 import java.util.List;
 
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.UserList;
-
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.crakac.fallintoofuton.R;
 import com.crakac.ofuton.accounts.AccountSelectActivity;
 import com.crakac.ofuton.lists.ListObserver;
 import com.crakac.ofuton.lists.ListSelectActivity;
 import com.crakac.ofuton.status.StatusHolder;
-import com.crakac.ofuton.util.AppUtil;
 import com.crakac.ofuton.util.TwitterList;
 import com.crakac.ofuton.util.TwitterUtils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
