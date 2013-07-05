@@ -36,13 +36,14 @@ public class UsersListFragment extends Fragment{
 	private ListAdapter mAdapter;
 	private FragmentManager manager;
 	private TreeSet<Integer> currentListIds, initialListIds;
+	private AsyncTask<Void, Void, List<twitter4j.UserList>> loadListTask;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		Log.d(TAG, "onCreateView");
 		
-		//最初の時点でのリストのID一覧をば
+		//リストに変更があったか確かめるために，最初の時点でのリストのID一覧を持ってくる
 		initialListIds = new TreeSet<Integer>();
 		for(TwitterList list : TwitterUtils.getCurrentUserLists(getActivity())){
 			initialListIds.add(list.getListId());
@@ -130,6 +131,19 @@ public class UsersListFragment extends Fragment{
 		return view;
 	}
 	
+	
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		if(loadListTask != null && loadListTask.getStatus() == AsyncTask.Status.RUNNING){
+			loadListTask.cancel(true);
+			loadListTask = null;
+		}
+	}
+
+
+
 	private class ListAdapter extends ArrayAdapter<TwitterList>{
 		private LayoutInflater mInflater;
 		
@@ -148,6 +162,8 @@ public class UsersListFragment extends Fragment{
 			TextView listName = (TextView) convertView.findViewById(R.id.listName);
 			
 			TwitterList item = getItem(position);
+
+			//FragmentのonCreateViewでcurrentListIdsは取得済
 			if(currentListIds.contains(item.getListId())){
 				check.setVisibility(View.VISIBLE);
 			} else {
@@ -159,7 +175,7 @@ public class UsersListFragment extends Fragment{
 	}
 
 	void loadList(){
-		AsyncTask<Void, Void, List<twitter4j.UserList>> task = new AsyncTask<Void, Void, List<twitter4j.UserList>>(){
+		loadListTask = new AsyncTask<Void, Void, List<twitter4j.UserList>>(){
 			ProgressDialogFragment progressDialog;
 			Twitter twitter;
 			@Override
@@ -192,6 +208,6 @@ public class UsersListFragment extends Fragment{
 				}
 			}
 		};
-		task.execute();
+		loadListTask.execute();
 	}
 }
