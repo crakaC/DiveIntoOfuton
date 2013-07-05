@@ -1,6 +1,5 @@
 package com.crakac.ofuton.conversation;
 
-
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -40,7 +39,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class ConversationFragment extends Fragment implements ActionSelectListener {
+public class ConversationFragment extends Fragment implements
+		ActionSelectListener {
 
 	private TweetStatusAdapter mAdapter;// statusを保持してlistviewに表示する奴
 	private Twitter mTwitter;
@@ -52,19 +52,21 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 	// private GestureDetector gestureDetector;
 	private long nextId = -1l;// ツイートを取得するときに使う．
 	private AsyncTask<Void, Void, twitter4j.Status> initTask;
-	private AsyncTask<Void, Void, twitter4j.Status> loadPreviousTask, loadMorePreviousTask;
 	private AsyncTask<Void, Void, twitter4j.Status> favTask, rtTask;
+	private LoadConversationTask loadTask;
 	private boolean alreadyShown = false;
 	private final ConversationFragment selfFragment;
-	private static final String TAG = ConversationFragment.class.getSimpleName();
-	public ConversationFragment(){
+	private static final String TAG = ConversationFragment.class
+			.getSimpleName();
+
+	public ConversationFragment() {
 		selfFragment = this;
 	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);// インスタンスを保持　画面が回転しても取得したTweetが消えなくなる
-		setHasOptionsMenu(true);//オプションメニューをフラグメントから追加
 	}
 
 	@Override
@@ -77,30 +79,34 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 		if (mAdapter == null) {
 			mAdapter = new TweetStatusAdapter(getActivity());
 		}
-		
-		if (mTwitter == null){
+
+		if (mTwitter == null) {
 			mTwitter = TwitterUtils.getTwitterInstance(getActivity());
 		}
-		ptrListView = (PullToRefreshListView) view.findViewById(R.id.conversationList);
+		ptrListView = (PullToRefreshListView) view
+				.findViewById(R.id.conversationList);
 		listView = ptrListView.getRefreshableView();
 		listView.setDivider(getResources().getDrawable(R.color.dark_gray));
 		listView.setDividerHeight(1);
-		if(footerView == null){
-			footerView = (View) inflater.inflate(R.layout.list_item_footer,null);
+		if (footerView == null) {
+			footerView = (View) inflater.inflate(R.layout.list_item_footer,
+					null);
 		}
 		footerText = (TextView) footerView.findViewById(R.id.listFooterText);
-		footerProgress = (ProgressBar) footerView.findViewById(R.id.listFooterProgress);
-		if(!alreadyShown){
-			ptrListView.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
-				@Override
-				public void onLastItemVisible() {
-					loadPreviousTweet();
-				}
-			});
+		footerProgress = (ProgressBar) footerView
+				.findViewById(R.id.listFooterProgress);
+		if (!alreadyShown) {
+			ptrListView
+					.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
+						@Override
+						public void onLastItemVisible() {
+							loadPrevious();
+						}
+					});
 			listView.addFooterView(footerView);
 			footerView.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View arg0) {
-					loadPreviousTweet();
+					loadPrevious();
 				}
 			});
 		}
@@ -123,7 +129,8 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 				twitter4j.Status status = (twitter4j.Status) lv
 						.getItemAtPosition(position);
 				StatusHolder.setStatus(status);
-				StatusDialogFragment dialog = new StatusDialogFragment(selfFragment);
+				StatusDialogFragment dialog = new StatusDialogFragment(
+						selfFragment);
 				dialog.show(getFragmentManager(), "dialog");
 			}
 		});
@@ -131,33 +138,32 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 		return view;
 	}
 
-//	@Override
-//	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-//		super.onCreateContextMenu(menu, v, menuInfo);
-//		AdapterContextMenuInfo adapterInfo = (AdapterContextMenuInfo) menuInfo;
-//		menu.setHeaderTitle("Menu");
-//		twitter4j.Status tweet = mAdapter.getItem(adapterInfo.position - 1);
-//		menu.add("@" + tweet.getUser().getScreenName());
-//		menu.add("reply");
-//		menu.add("retweet");
-//		menu.add("favorite");
-//	}
+	// @Override
+	// public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo
+	// menuInfo) {
+	// super.onCreateContextMenu(menu, v, menuInfo);
+	// AdapterContextMenuInfo adapterInfo = (AdapterContextMenuInfo) menuInfo;
+	// menu.setHeaderTitle("Menu");
+	// twitter4j.Status tweet = mAdapter.getItem(adapterInfo.position - 1);
+	// menu.add("@" + tweet.getUser().getScreenName());
+	// menu.add("reply");
+	// menu.add("retweet");
+	// menu.add("favorite");
+	// }
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		//getActivity().getMenuInflater().inflate(R.menu.timeline, menu);
-		super.onCreateOptionsMenu(menu, inflater);
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-//		switch(item.getItemId()){
-//		case R.id.menu_refresh :
-//			mAdapter.clear();
-//			mAdapter.notifyDataSetChanged();
-//			initialStatuses();
-//		}
-		return super.onOptionsItemSelected(item);
+	public void onPause() {
+		super.onPause();
+		Log.d(TAG, "onPause()");
+		if (initTask != null
+				&& initTask.getStatus() == AsyncTask.Status.RUNNING) {
+			initTask.cancel(true);
+		}
+		if (loadTask != null
+				&& loadTask.getStatus() == AsyncTask.Status.RUNNING) {
+			loadTask.cancel(true);
+			loadTask = null;
+		}
 	}
 
 	private void initConversation() {
@@ -169,7 +175,7 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 			protected void onPreExecute() {
 				setFooterViewLoading();
 				twitter4j.Status status;
-				if(StatusHolder.getStatus().isRetweet()){
+				if (StatusHolder.getStatus().isRetweet()) {
 					status = StatusHolder.getStatus().getRetweetedStatus();
 				} else {
 					status = StatusHolder.getStatus();
@@ -177,6 +183,7 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 				mAdapter.add(status);
 				nextId = status.getInReplyToStatusId();
 			}
+
 			@Override
 			protected twitter4j.Status doInBackground(Void... params) {
 				return nextTweet(nextId);
@@ -188,8 +195,10 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 					mAdapter.add(result);
 					nextId = result.getInReplyToStatusId();
 					Log.d(TAG, "nextId:" + nextId);
-					if(nextId > 0){
-						loadPreviousTweet();
+					if (nextId > 0) {
+						setFooterViewStandby();
+						loadTask = new LoadConversationTask();
+						loadTask.execute();
 					} else {
 						removeFooterView();
 					}
@@ -198,77 +207,66 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 					setFooterViewStandby();
 				}
 			}
+
+			@Override
+			protected void onCancelled() {
+				super.onCancelled();
+				setFooterViewStandby();
+			}
+
 		};
 		initTask.execute();
 	}
 
-	private void loadPreviousTweet() {
-		//画面から起動するのはこっちのタスクだけなので，読込中かどうかはこっちのメソッドでだけ判定すれば良い．
-		if (loadPreviousTask != null
-				&& loadPreviousTask.getStatus() == AsyncTask.Status.RUNNING) {
-			return;
+	private class LoadConversationTask extends AsyncTask<Void, Void, Status> {
+
+		@Override
+		protected void onPreExecute() {
+			setFooterViewLoading();
 		}
-		if (loadMorePreviousTask != null
-				&& loadMorePreviousTask.getStatus() == AsyncTask.Status.RUNNING) {
-			return;
+
+		@Override
+		protected twitter4j.Status doInBackground(Void... params) {
+			return nextTweet(nextId);
 		}
-		loadPreviousTask = new AsyncTask<Void, Void, Status>() {
-			
-			@Override
-			protected twitter4j.Status doInBackground(Void... params) {
-				return nextTweet(nextId);
-			}
-			@Override
-			protected void onPostExecute(twitter4j.Status result) {
-				if (result != null) {
-					mAdapter.add(result);
-					mAdapter.notifyDataSetChanged();
-					nextId = result.getInReplyToStatusId();
-					Log.d(TAG, "nextId:" + nextId);
-					if(nextId > 0){
-						//new LoadConversationTask().execute(next);
-						loadMorePreviousTweet();
-					} else {
-						removeFooterView();
-						Log.d(TAG, "正常終了");
-					}
+
+		@Override
+		protected void onPostExecute(twitter4j.Status result) {
+			if (result != null) {
+				mAdapter.add(result);
+				mAdapter.notifyDataSetChanged();
+				nextId = result.getInReplyToStatusId();
+				Log.d(TAG, "nextId:" + nextId);
+				if (nextId > 0) {
+					loadTask = new LoadConversationTask();
+					loadTask.execute();
 				} else {
-					AppUtil.showToast(getActivity(), "何かがおかしいよ");
-					setFooterViewStandby();
+					removeFooterView();
+					Log.d(TAG, "正常終了");
 				}
+			} else {
+				AppUtil.showToast(getActivity(), "何かがおかしいよ");
+				setFooterViewStandby();
 			}
-		};
-		loadPreviousTask.execute();
+		}
+
+		@Override
+		protected void onCancelled() {
+			super.onCancelled();
+			Log.d(TAG, "onCancelled()");
+			setFooterViewStandby();
+		}
 	}
 
-	private void loadMorePreviousTweet() {
-		loadMorePreviousTask = new AsyncTask<Void, Void, Status>() {
-			
-			@Override
-			protected twitter4j.Status doInBackground(Void... params) {
-				return nextTweet(nextId);
-			}
-			@Override
-			protected void onPostExecute(twitter4j.Status result) {
-				if (result != null) {
-					mAdapter.add(result);
-					mAdapter.notifyDataSetChanged();
-					nextId = result.getInReplyToStatusId();
-					Log.d(TAG, "nextId:" + nextId);
-					if(nextId > 0){
-						loadPreviousTweet();
-					} else {
-						removeFooterView();
-						Log.d(TAG, "正常終了");
-					}
-				} else {
-					AppUtil.showToast(getActivity(), "何かがおかしいよ");
-					setFooterViewStandby();
-				}
-			}
-		};
-		loadMorePreviousTask.execute();
+	void loadPrevious() {
+		if (loadTask != null && loadTask.getStatus() == AsyncTask.Status.RUNNING) {
+			Log.d(TAG, "loadPrevious() return : loadTask is running.");
+			return;
+		}
+		loadTask = new LoadConversationTask();
+		loadTask.execute();
 	}
+
 	private void setFooterViewLoading() {
 		footerText.setText(getResources().getString(R.string.now_loading));
 		footerProgress.setVisibility(View.VISIBLE);
@@ -278,17 +276,16 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 		footerText.setText(getResources().getString(R.string.read_more));
 		footerProgress.setVisibility(View.GONE);
 	}
-	
-	private void removeFooterView(){
+
+	private void removeFooterView() {
 		listView.removeFooterView(footerView);
-		footerText.setText("もうないよ");
 		footerProgress.setVisibility(View.GONE);
 		ptrListView.setMode(Mode.DISABLED);
 		ptrListView.setOnLastItemVisibleListener(null);
 		alreadyShown = true;
 	}
 
-	private twitter4j.Status nextTweet(long id){
+	private twitter4j.Status nextTweet(long id) {
 		try {
 			return mTwitter.showStatus(nextId);
 		} catch (TwitterException e) {
@@ -297,34 +294,38 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 		return null;
 	}
 
+	/************** 以下はBaseTimelineFragmentと同じ(onConversation()を除く) *****/
+
 	@Override
 	public void onReply() {
-		Intent intent = new Intent(getActivity(),
-				TweetActivity.class);
+		Intent intent = new Intent(getActivity(), TweetActivity.class);
 		intent.putExtra("replyId", StatusHolder.getStatus().getId());
-		intent.putExtra("replyName", StatusHolder.getStatus()
-				.getUser().getScreenName());
+		intent.putExtra("replyName", StatusHolder.getStatus().getUser()
+				.getScreenName());
 		startActivity(intent);
 	}
+
 	@Override
 	public void onFav() {
-		if(favTask != null && favTask.getStatus() == AsyncTask.Status.RUNNING ){
+		if (favTask != null && favTask.getStatus() == AsyncTask.Status.RUNNING) {
 			return;
 		}
 		favTask = new AsyncTask<Void, Void, twitter4j.Status>() {
 			twitter4j.Status status;
-			boolean doUnfav = false;			
+			boolean doUnfav = false;
+
 			@Override
 			protected void onPreExecute() {
 				super.onPreExecute();
 				status = StatusHolder.getStatus();
-				if(status.isFavorited())
+				if (status.isFavorited())
 					doUnfav = true;
 			}
+
 			@Override
 			protected twitter4j.Status doInBackground(Void... params) {
 				try {
-					if(doUnfav){
+					if (doUnfav) {
 						return mTwitter.destroyFavorite(status.getId());
 					} else {
 						return mTwitter.createFavorite(status.getId());
@@ -337,10 +338,10 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 
 			@Override
 			protected void onPostExecute(twitter4j.Status result) {
-				if(result == null){
+				if (result == null) {
 					AppUtil.showToast(getActivity(), "無理でした");
 				} else {
-					if(doUnfav){
+					if (doUnfav) {
 						AppUtil.showToast(getActivity(), "あんふぁぼしました");
 					} else {
 						AppUtil.showToast(getActivity(), "お気に入りに追加しました");
@@ -357,22 +358,24 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 
 	@Override
 	public void onRT() {
-		if(rtTask != null && rtTask.getStatus() == AsyncTask.Status.RUNNING ){
+		if (rtTask != null && rtTask.getStatus() == AsyncTask.Status.RUNNING) {
 			return;
 		}
 		rtTask = new AsyncTask<Void, Void, twitter4j.Status>() {
 			@Override
 			protected twitter4j.Status doInBackground(Void... params) {
 				try {
-					return mTwitter.retweetStatus(StatusHolder.getStatus().getId());
+					return mTwitter.retweetStatus(StatusHolder.getStatus()
+							.getId());
 				} catch (TwitterException e) {
 					e.printStackTrace();
 				}
 				return null;
 			}
+
 			@Override
 			protected void onPostExecute(twitter4j.Status result) {
-				if(result == null){
+				if (result == null) {
 					AppUtil.showToast(getActivity(), "無理でした");
 				} else {
 					AppUtil.showToast(getActivity(), "リツイートしました");
@@ -381,29 +384,31 @@ public class ConversationFragment extends Fragment implements ActionSelectListen
 		};
 		rtTask.execute();
 	}
+
 	@Override
 	public void onUser() {
 		// TODO Auto-generated method stub
 	}
+
 	@Override
 	public void onLink(String url) {
-		Intent intent = new Intent(Intent.ACTION_VIEW, Uri
-				.parse(url));
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 		startActivity(intent);
 	}
+
 	@Override
 	public void onMedia(String url) {
-		Intent intent = new Intent(Intent.ACTION_VIEW, Uri
-				.parse(url));
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 		startActivity(intent);
 	}
+
 	@Override
 	public void onHashTag(String tag) {
-		Intent intent = new Intent(getActivity(),
-				TweetActivity.class);
+		Intent intent = new Intent(getActivity(), TweetActivity.class);
 		intent.putExtra("hashTag", tag);
 		startActivity(intent);
 	}
+
 	@Override
 	public void onConvesation() {
 		// TODO Auto-generated method stub
