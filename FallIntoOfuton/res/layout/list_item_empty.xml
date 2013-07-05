@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical|center_horizontal"
-    android:background="@color/status_action_list"
+    android:background="@color/dark_gray"
     android:orientation="horizontal"
     android:padding="6dp" >
 
