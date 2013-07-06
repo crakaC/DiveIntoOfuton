@@ -45,7 +45,7 @@ public class StatusDialogFragment extends DialogFragment {
 
 		void onRT();
 
-		void onUser();
+		void onUser(String screenName);
 
 		void onLink(String url);
 
@@ -90,22 +90,22 @@ public class StatusDialogFragment extends DialogFragment {
 		lvActions.setAdapter(mActionAdapter);
 		// reply
 		mActionAdapter
-				.add(new Pair<String, Integer>(null, StatusConstant.REPLY));
+				.add(new Pair<String, ActionType>(null, ActionType.REPLY));
 		// retweet
-		mActionAdapter.add(new Pair<String, Integer>(null,
-				StatusConstant.RETWEET));
+		mActionAdapter.add(new Pair<String, ActionType>(null,
+				ActionType.RETWEET));
 		// favorite
-		mActionAdapter.add(new Pair<String, Integer>(null, StatusConstant.FAV));
+		mActionAdapter.add(new Pair<String, ActionType>(null, ActionType.FAV));
 
 		// conversationÅ@RTÇÃèÍçáÇçló∂
 		if (StatusHolder.getStatus().isRetweet()
 				&& StatusHolder.getStatus().getRetweetedStatus()
 						.getInReplyToScreenName() != null) {
-			mActionAdapter.add(new Pair<String, Integer>(null,
-					StatusConstant.CONVERSATION));
+			mActionAdapter.add(new Pair<String, ActionType>(null,
+					ActionType.CONVERSATION));
 		} else if (StatusHolder.getStatus().getInReplyToScreenName() != null) {
-			mActionAdapter.add(new Pair<String, Integer>(null,
-					StatusConstant.CONVERSATION));
+			mActionAdapter.add(new Pair<String, ActionType>(null,
+					ActionType.CONVERSATION));
 		}
 
 		// user, media, url, hashtag entities
@@ -119,27 +119,49 @@ public class StatusDialogFragment extends DialogFragment {
 				ActionSelectListener listener = (ActionSelectListener) getTargetFragment();
 
 				ListView lv = (ListView) parent;
-				Pair<String, Integer> item = (Pair<String, Integer>) lv
+				Pair<String, ActionType> item = (Pair<String, ActionType>) lv
 						.getItemAtPosition(position);
 				dialog.dismiss();
-				int type = item.second;
-				if (type == StatusConstant.REPLY) {
+				switch (item.second) {
+				case REPLY:
 					listener.onReply();
-				} else if (type == StatusConstant.RETWEET) {
+					break;
+
+				case RETWEET:
 					listener.onRT();
-				} else if (type == StatusConstant.FAV) {
+					break;
+
+				case FAV:
 					listener.onFav();
-				} else if (type == StatusConstant.FAV_AND_RT) {
+					break;
+
+				case FAV_AND_RT:
 					listener.onFav();
 					listener.onRT();
-				} else if (type == StatusConstant.LINK) {
+					break;
+
+				case LINK:
 					listener.onLink(item.first);
-				} else if (type == StatusConstant.MEDIA) {
+					break;
+
+				case MEDIA:
 					listener.onLink(item.first);
-				} else if (type == StatusConstant.HASHTAG) {
+					break;
+
+				case HASHTAG:
 					listener.onHashTag(item.first);
-				} else if (type == StatusConstant.CONVERSATION) {
+					break;
+
+				case CONVERSATION:
 					listener.onConvesation();
+					break;
+
+				case USER:
+					listener.onUser(item.first);
+					break;
+
+				default:
+					break;
 				}
 			}
 		});
@@ -204,8 +226,8 @@ public class StatusDialogFragment extends DialogFragment {
 			}
 		}
 		for (String user : users) {
-			mActionAdapter.add(new Pair<String, Integer>("@" + user,
-					StatusConstant.USER));
+			mActionAdapter.add(new Pair<String, ActionType>(user,
+					ActionType.USER));
 		}
 
 		// set Media entities
@@ -218,8 +240,8 @@ public class StatusDialogFragment extends DialogFragment {
 		}
 		for (MediaEntity media : mediaEntities) {
 			medias.add(media.getExpandedURL());
-			mActionAdapter.add(new Pair<String, Integer>(
-					media.getExpandedURL(), StatusConstant.MEDIA));
+			mActionAdapter.add(new Pair<String, ActionType>(media
+					.getExpandedURL(), ActionType.MEDIA));
 			Log.d("MediaEntity", media.getExpandedURL());
 		}
 
@@ -232,8 +254,8 @@ public class StatusDialogFragment extends DialogFragment {
 		}
 		for (URLEntity url : urlEntities) {
 			if (!medias.contains(url.getExpandedURL())) {
-				mActionAdapter.add(new Pair<String, Integer>(url
-						.getExpandedURL(), StatusConstant.LINK));
+				mActionAdapter.add(new Pair<String, ActionType>(url
+						.getExpandedURL(), ActionType.LINK));
 				Log.d("URLEntity", url.getExpandedURL());
 			}
 		}
@@ -246,8 +268,8 @@ public class StatusDialogFragment extends DialogFragment {
 			hashtags = status.getHashtagEntities();
 		}
 		for (HashtagEntity hashtag : hashtags) {
-			mActionAdapter.add(new Pair<String, Integer>("#"
-					+ hashtag.getText(), StatusConstant.HASHTAG));
+			mActionAdapter.add(new Pair<String, ActionType>("#"
+					+ hashtag.getText(), ActionType.HASHTAG));
 		}
 	}
 }

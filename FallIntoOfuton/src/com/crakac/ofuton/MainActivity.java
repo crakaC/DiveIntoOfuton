@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.crakac.fallintoofuton.R;
-import com.crakac.ofuton.accounts.AccountSelectActivity;
+import com.crakac.ofuton.accounts.SelectAccountActivity;
 import com.crakac.ofuton.lists.ListObserver;
 import com.crakac.ofuton.lists.ListSelectActivity;
 import com.crakac.ofuton.status.StatusHolder;
@@ -40,7 +40,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (!TwitterUtils.existCurrentUser(this)) {
-			Intent intent = new Intent(this, AccountSelectActivity.class);
+			Intent intent = new Intent(this, SelectAccountActivity.class);
 			startActivity(intent);
 			finish();
 		} else {
@@ -114,7 +114,7 @@ public class MainActivity extends FragmentActivity {
 			startActivity(new Intent(this, ListSelectActivity.class));
 			break;
 		case R.id.menu_accounts:
-			Intent acountSetting = new Intent(this, AccountSelectActivity.class);
+			Intent acountSetting = new Intent(this, SelectAccountActivity.class);
 			startActivity(acountSetting);
 		}
 		return super.onOptionsItemSelected(item);

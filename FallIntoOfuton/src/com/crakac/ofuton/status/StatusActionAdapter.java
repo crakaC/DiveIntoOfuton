@@ -15,10 +15,12 @@ import com.crakac.fallintoofuton.R;
 
 /**
  * ツイートをタップした時に出てくるダイアログのメニュー部分
+ * 
  * @author Kosuke
- *
+ * 
  */
-public class StatusActionAdapter extends ArrayAdapter<Pair<String, Integer>> {
+public class StatusActionAdapter extends ArrayAdapter<Pair<String, ActionType>> {
+	private static final String TAG = StatusActionAdapter.class.getSimpleName();
 	private Context mContext;
 	private LayoutInflater mInflater;
 
@@ -48,27 +50,37 @@ public class StatusActionAdapter extends ArrayAdapter<Pair<String, Integer>> {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		Pair<String, Integer> item = getItem(position);
-		int type = item.second;
-		if (type == StatusConstant.REPLY) {
+		Pair<String, ActionType> item = getItem(position);
+		switch (item.second) {
+		case REPLY:
 			holder.actionName.setText(mContext.getResources().getString(
 					R.string.reply));
 			holder.icon.setImageResource(R.drawable.ic_menu_reply);
-		} else if (type == StatusConstant.USER) {
-			holder.actionName.setText(item.first);
+			break;
+		case USER:
+			holder.actionName.setText("@" + item.first);// スクリーンネームの最初に@をつけて表示
 			holder.icon.setImageResource(R.drawable.ic_menu_user);
-		} else if (type == StatusConstant.CONVERSATION) {
-			holder.actionName.setText(mContext.getResources().getString(R.string.show_conversation));
+			break;
+
+		case CONVERSATION:
+			holder.actionName.setText(mContext.getResources().getString(
+					R.string.show_conversation));
 			holder.icon.setImageResource(R.drawable.ic_menu_conversation);
-		} else if (type == StatusConstant.RETWEET) {
-			if(StatusHolder.getStatus().isRetweetedByMe()){
-				holder.actionName.setText(mContext.getResources().getString(R.string.unretweet));
+			break;
+
+		case RETWEET:
+			if (StatusHolder.getStatus().isRetweetedByMe()) {
+				holder.actionName.setText(mContext.getResources().getString(
+						R.string.unretweet));
 			} else {
-				holder.actionName.setText(mContext.getResources().getString(R.string.retweet));
+				holder.actionName.setText(mContext.getResources().getString(
+						R.string.retweet));
 			}
 			holder.icon.setImageResource(R.drawable.ic_menu_retweet);
-		} else if (type == StatusConstant.FAV) {
-			if( StatusHolder.getStatus().isFavorited() ){
+			break;
+
+		case FAV:
+			if (StatusHolder.getStatus().isFavorited()) {
 				holder.actionName.setText(mContext.getResources().getString(
 						R.string.unfavorite));
 				holder.icon.setImageResource(R.drawable.ic_menu_unfav);
@@ -77,15 +89,25 @@ public class StatusActionAdapter extends ArrayAdapter<Pair<String, Integer>> {
 						R.string.favorite));
 				holder.icon.setImageResource(R.drawable.ic_menu_favorite);
 			}
-		} else if (type == StatusConstant.LINK) {
+			break;
+
+		case LINK:
 			holder.actionName.setText(item.first);
 			holder.icon.setImageResource(R.drawable.ic_menu_link);
-		} else if (type == StatusConstant.MEDIA) {
+			break;
+		case MEDIA:
 			holder.actionName.setText(item.first);
 			holder.icon.setImageResource(R.drawable.ic_menu_media);
-		} else if (type == StatusConstant.HASHTAG) {
+			break;
+
+		case HASHTAG:
 			holder.actionName.setText(item.first);
 			holder.icon.setImageResource(R.drawable.ic_menu_hashtag);
+			break;
+
+		default:
+			Log.d(TAG, "unknown case " + item.second);
+			break;
 		}
 		return convertView;
 	}

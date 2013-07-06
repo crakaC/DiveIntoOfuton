@@ -386,7 +386,7 @@ public class ConversationFragment extends Fragment implements
 	}
 
 	@Override
-	public void onUser() {
+	public void onUser(String screenName) {
 		// TODO Auto-generated method stub
 	}
 
