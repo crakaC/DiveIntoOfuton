@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -21,6 +21,17 @@
     <style name="pagerTabStripText">
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="userDetail">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/light_gray</item>
+        <item name="android:textStyle">bold|italic</item>
+    </style>
+    
+    <style name="userDetailText">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text</item>
     </style>
 <!-- 
     <style name="CustomTabPageIndicator" parent="Widget.TabPageIndicator">

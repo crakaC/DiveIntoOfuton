@@ -13,6 +13,7 @@ import com.crakac.ofuton.status.StatusDialogFragment;
 import com.crakac.ofuton.status.StatusHolder;
 import com.crakac.ofuton.status.TweetStatusAdapter;
 import com.crakac.ofuton.status.StatusDialogFragment.ActionSelectListener;
+import com.crakac.ofuton.user.UserDetailActivity;
 import com.crakac.ofuton.util.AppUtil;
 import com.crakac.ofuton.util.TwitterUtils;
 
@@ -372,7 +373,6 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 
 	@Override
 	public void onReply() {
-		// TODO Auto-generated method stub
 		Intent intent = new Intent(getActivity(),
 				TweetActivity.class);
 		intent.putExtra("replyId", StatusHolder.getStatus().getId());
@@ -456,8 +456,10 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 		rtTask.execute();
 	}
 	@Override
-	public void onUser() {
-		// TODO Auto-generated method stub
+	public void onUser(String screenName) {
+		Intent intent = new Intent(getActivity(), UserDetailActivity.class);
+		intent.putExtra("screenName", screenName);
+		startActivity(intent);
 	}
 	@Override
 	public void onLink(String url) {

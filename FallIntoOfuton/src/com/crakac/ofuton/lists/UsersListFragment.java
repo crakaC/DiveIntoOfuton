@@ -156,7 +156,7 @@ public class UsersListFragment extends Fragment{
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			if(convertView == null){
-				convertView = mInflater.inflate(R.layout.user_list_listitem, parent, false);
+				convertView = mInflater.inflate(R.layout.userlist_listitem, parent, false);
 			}
 			ImageView check = (ImageView) convertView.findViewById(R.id.checkMark);
 			TextView listName = (TextView) convertView.findViewById(R.id.listName);

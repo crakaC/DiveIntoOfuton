@@ -28,4 +28,7 @@
     <string name="list_title">Lists</string>
     <string name="list">リスト</string>
     <string name="something_wrong">何かがおかしいよ</string>
+    <string name="bio">BIO</string>
+    <string name="location">LOCATION</string>
+    <string name="url">URL</string>
 </resources>
