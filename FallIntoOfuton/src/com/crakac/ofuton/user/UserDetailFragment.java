@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.crakac.fallintoofuton.R;
+import com.crakac.ofuton.TimelineFragmentPagerAdapter;
 import com.crakac.ofuton.util.AppUtil;
 import com.crakac.ofuton.util.ProgressDialogFragment;
 import com.crakac.ofuton.util.TwitterUtils;
@@ -31,19 +34,21 @@ public class UserDetailFragment extends Fragment{
 	private FragmentManager manager;
 	private twitter4j.User userInfo;
 	private Twitter twitter;
+	
+	private PagerSlidingTabStrip tab;
+	private ViewPager pager;
+	private TimelineFragmentPagerAdapter adapter;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		Log.d(TAG, "onCreateView");
-		View view = inflater.inflate(R.layout.user_detail_fragment, container, false);
-		name = (TextView) view.findViewById(R.id.userName);
-		screenName = (TextView) view.findViewById(R.id.screenName);
-		bio = (TextView) view.findViewById(R.id.bioText);
-		location = (TextView) view.findViewById(R.id.locationText);
-		url = (TextView) view.findViewById(R.id.urlText);
-		icon = (SmartImageView)view.findViewById(R.id.icon);
-		relation = (TextView) view.findViewById(R.id.relationText);
-		followBtn = (Button)view.findViewById(R.id.followBtn);
+
+		adapter = new TimelineFragmentPagerAdapter(getFragmentManager());
+		adapter.addHomeTimeline();
+		adapter.addFavoriteTimeline();
+		adapter.addMentionsTimeline();
+		pager.setAdapter(adapter);
+		tab.setViewPager(pager);
 		
 		twitter = TwitterUtils.getTwitterInstance(getActivity());
 		manager = getActivity().getSupportFragmentManager();
@@ -51,7 +56,7 @@ public class UserDetailFragment extends Fragment{
 		initTexts();
 		loadContent();
 
-		return view;
+		return null;
 	}
 	
 	private void initTexts(){
@@ -132,8 +137,10 @@ public class UserDetailFragment extends Fragment{
 						relation.setText("相互フォロー");
 					} else if(result.isSourceFollowingTarget()){
 						relation.setText("片思い");
-					} else {
+					} else if(result.isSourceFollowedByTarget()){
 						relation.setText("ファン");
+					} else {
+						relation.setText("無関心");
 					}
 				} else {
 					AppUtil.showToast(getActivity(), "何かがおかしいよ");
@@ -141,6 +148,11 @@ public class UserDetailFragment extends Fragment{
 				}
 			}
 		};
-		loadRelationTask.execute(TwitterUtils.getCurrentUserId(getActivity()), user.getId());
+		long currentUserId = TwitterUtils.getCurrentUserId(getActivity());
+		if(user.getId() == currentUserId){
+			relation.setText("それはあなたです！");
+			return;
+		}
+		loadRelationTask.execute(currentUserId, user.getId());
 	}
 }

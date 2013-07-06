@@ -1,16 +1,64 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/gray">
+    
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/droid_darkblue" >
+
+        <com.loopj.android.image.SmartImageView
+        android:id="@+id/icon"
+        android:layout_width="48dip"
+        android:layout_height="48dip"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="8dp"
+        android:src="@drawable/ic_action_refresh" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/relationText"
+            android:layout_toRightOf="@+id/icon"
+            android:text="@string/dummy"
+            android:textAppearance="@style/pagerTabStripText" />
+        
+        <View
+            android:id="@+id/underLine"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/transparent_black"/>
+
+         <TextView
+             android:id="@+id/relationText"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="3dp"
+             android:layout_marginRight="3dp"
+             android:layout_centerVertical="true"
+             android:layout_alignParentRight="true"
+             android:background="@android:color/white"
+             android:textColor="@color/droid_darkblue"
+             android:text="@string/dummy" />
+
+    </RelativeLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/pagerTabStrip" />
+        android:layout_below="@+id/tab"
+        android:background="@android:color/black"/>
 
     <com.astuetz.viewpager.extensions.PagerSlidingTabStrip
-        android:id="@+id/pagerTabStrip"
+        android:id="@+id/tab"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_below="@+id/userProfile"
@@ -21,60 +69,13 @@
         android:textSize="12sp" >
     </com.astuetz.viewpager.extensions.PagerSlidingTabStrip>
 
-    <com.loopj.android.image.SmartImageView
-        android:id="@+id/icon"
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:src="@drawable/ic_action_refresh" />
 
-    <TextView
-        android:id="@+id/userName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/relation"
-        android:layout_toRightOf="@+id/icon"
-        android:text="@string/dummy" />
 
-    <TextView
-        android:id="@+id/screenName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/userName"
-        android:layout_alignRight="@+id/userName"
-        android:layout_below="@+id/userName"
-        android:text="@string/dummy" />
-
-    <LinearLayout
-        android:id="@+id/relation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="5dp" >
-
-        <Button
-            android:id="@+id/followBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Button" />
-
-        <TextView
-            android:id="@+id/relationText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dummy" />
-    </LinearLayout>
-
-    <LinearLayout
+   <LinearLayout
         android:id="@+id/userProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/icon"
+        android:layout_below="@+id/topBar"
         android:orientation="vertical"
         android:padding="5dp" >
 
@@ -90,7 +91,9 @@
             android:id="@+id/bioText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginBottom="3dp"
             android:text="@string/dummy"
             android:textAppearance="@style/userDetailText" />
 
@@ -106,7 +109,9 @@
             android:id="@+id/locationText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginBottom="3dp"
             android:text="@string/dummy"
             android:textAppearance="@style/userDetailText" />
 
@@ -122,9 +127,19 @@
             android:id="@+id/urlText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginBottom="3dp"
             android:text="@string/dummy"
             android:textAppearance="@style/userDetailText" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/tweetEveryWhere"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_compose_everywhere" />
 
 </RelativeLayout>
