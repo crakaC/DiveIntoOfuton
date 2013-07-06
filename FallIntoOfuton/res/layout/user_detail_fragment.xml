@@ -80,7 +80,7 @@
 
         <TextView
             android:id="@+id/bio"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
             android:text="@string/bio"
@@ -96,7 +96,7 @@
 
         <TextView
             android:id="@+id/location"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
             android:text="@string/location"
@@ -112,7 +112,7 @@
 
         <TextView
             android:id="@+id/url"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
             android:text="@string/url"
