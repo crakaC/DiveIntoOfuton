@@ -4,50 +4,33 @@ import java.util.List;
 import java.util.ListIterator;
 
 import twitter4j.Twitter;
-import twitter4j.TwitterException;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.crakac.fallintoofuton.R;
-import com.crakac.ofuton.TweetActivity;
-import com.crakac.ofuton.conversation.ShowConversationActivity;
 import com.crakac.ofuton.status.StatusDialogFragment;
 import com.crakac.ofuton.status.StatusHolder;
 import com.crakac.ofuton.status.TweetStatusAdapter;
-import com.crakac.ofuton.status.StatusDialogFragment.ActionSelectListener;
-import com.crakac.ofuton.user.UserDetailActivity;
 import com.crakac.ofuton.util.AppUtil;
 import com.crakac.ofuton.util.TwitterUtils;
-
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.ContextMenu;
-import android.view.GestureDetector;
-import android.view.GestureDetector.OnGestureListener;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
-public abstract class BaseTimelineFragment extends Fragment implements ActionSelectListener {
+public abstract class BaseTimelineFragment extends BaseStatusActionFragment {
 
 	private TweetStatusAdapter mAdapter;// statusを保持してlistviewに表示する奴
 	private Twitter mTwitter;
@@ -60,7 +43,6 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 	private long sinceId = -1l, maxId = -1l;// ツイートを取得するときに使う．
 	AsyncTask<Void, Void, List<twitter4j.Status>> initTask, loadNewTask,
 			loadPreviousTask;
-	AsyncTask<Void, Void, twitter4j.Status> favTask, rtTask;
 	private final BaseTimelineFragment selfFragment;
 	private static final String TAG = BaseTimelineFragment.class.getSimpleName();
 
@@ -370,118 +352,4 @@ public abstract class BaseTimelineFragment extends Fragment implements ActionSel
 	 * @return
 	 */
 	public abstract String getTimelineName();
-
-	@Override
-	public void onReply() {
-		Intent intent = new Intent(getActivity(),
-				TweetActivity.class);
-		intent.putExtra("replyId", StatusHolder.getStatus().getId());
-		intent.putExtra("replyName", StatusHolder.getStatus()
-				.getUser().getScreenName());
-		startActivity(intent);
-	}
-	@Override
-	public void onFav() {
-		if(favTask != null && favTask.getStatus() == AsyncTask.Status.RUNNING ){
-			return;
-		}
-		favTask = new AsyncTask<Void, Void, twitter4j.Status>() {
-			twitter4j.Status status;
-			boolean doUnfav = false;			
-			@Override
-			protected void onPreExecute() {
-				super.onPreExecute();
-				status = StatusHolder.getStatus();
-				if(status.isFavorited())
-					doUnfav = true;
-			}
-			@Override
-			protected twitter4j.Status doInBackground(Void... params) {
-				try {
-					if(doUnfav){
-						return mTwitter.destroyFavorite(status.getId());
-					} else {
-						return mTwitter.createFavorite(status.getId());
-					}
-				} catch (TwitterException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(twitter4j.Status result) {
-				if(result == null){
-					AppUtil.showToast(getActivity(), "無理でした");
-				} else {
-					if(doUnfav){
-						AppUtil.showToast(getActivity(), "あんふぁぼしました");
-					} else {
-						AppUtil.showToast(getActivity(), "お気に入りに追加しました");
-					}
-					int pos = mAdapter.getPosition(status);
-					mAdapter.remove(status);
-					mAdapter.insert(result, pos);
-					mAdapter.notifyDataSetChanged();
-				}
-			}
-		};
-		favTask.execute();
-	}
-
-	@Override
-	public void onRT() {
-		if(rtTask != null && rtTask.getStatus() == AsyncTask.Status.RUNNING ){
-			return;
-		}
-		rtTask = new AsyncTask<Void, Void, twitter4j.Status>() {
-			@Override
-			protected twitter4j.Status doInBackground(Void... params) {
-				try {
-					return mTwitter.retweetStatus(StatusHolder.getStatus().getId());
-				} catch (TwitterException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-			@Override
-			protected void onPostExecute(twitter4j.Status result) {
-				if(result == null){
-					AppUtil.showToast(getActivity(), "無理でした");
-				} else {
-					AppUtil.showToast(getActivity(), "リツイートしました");
-				}
-			}
-		};
-		rtTask.execute();
-	}
-	@Override
-	public void onUser(String screenName) {
-		Intent intent = new Intent(getActivity(), UserDetailActivity.class);
-		intent.putExtra("screenName", screenName);
-		startActivity(intent);
-	}
-	@Override
-	public void onLink(String url) {
-		Intent intent = new Intent(Intent.ACTION_VIEW, Uri
-				.parse(url));
-		startActivity(intent);
-	}
-	@Override
-	public void onMedia(String url) {
-		Intent intent = new Intent(Intent.ACTION_VIEW, Uri
-				.parse(url));
-		startActivity(intent);
-	}
-	@Override
-	public void onHashTag(String tag) {
-		Intent intent = new Intent(getActivity(),
-				TweetActivity.class);
-		intent.putExtra("hashTag", tag);
-		startActivity(intent);
-	}
-	@Override
-	public void onConvesation() {
-		startActivity(new Intent(getActivity(), ShowConversationActivity.class));
-	}
 }
