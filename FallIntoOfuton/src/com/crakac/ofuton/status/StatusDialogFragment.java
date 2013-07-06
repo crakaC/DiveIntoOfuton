@@ -18,7 +18,6 @@ import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +71,6 @@ public class StatusDialogFragment extends DialogFragment {
 		mActionAdapter = new StatusActionAdapter(getActivity());
 
 		// リストビューを作成
-		// ダイアログ全体がひとつのリストビューを含む．
 		// 2つ（ツイート表示用，アクション表示用）だと，ツイートが縦に長いと全画面分の領域を使ってしまい，アクションを選択できなくなる
 		ListView lvActions = (ListView) view
 				.findViewById(R.id.status_action_list);
@@ -147,24 +145,24 @@ public class StatusDialogFragment extends DialogFragment {
 		});
 		return view;
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-        dialog = getDialog();  
-        
-        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();  
-          
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        
-        //縦幅はwrap contentで，横幅は92%で．
-        int dialogWidth = (int) (metrics.widthPixels * 0.92);  
-        //int dialogHeight = (int) (metrics.heightPixels * 1.0);  
-          
-        lp.width = dialogWidth;
-        //lp.height = dialogHeight;
-        dialog.getWindow().setAttributes(lp);  
+
+		dialog = getDialog();
+
+		WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+
+		DisplayMetrics metrics = getResources().getDisplayMetrics();
+
+		// 縦幅はwrap contentで，横幅は92%で．
+		int dialogWidth = (int) (metrics.widthPixels * 0.92);
+		int dialogHeight = WindowManager.LayoutParams.WRAP_CONTENT;
+
+		lp.width = dialogWidth;
+		lp.height = dialogHeight;
+		dialog.getWindow().setAttributes(lp);
 	}
 
 	@Override
@@ -172,15 +170,17 @@ public class StatusDialogFragment extends DialogFragment {
 		dialog = new Dialog(getActivity());
 		// タイトル部分を消す．消さないとダイアログの表示位置が下にずれる
 		dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-		
-		// レイアウトはonCreateViewで作られる．ので，dialog.setContentViewはいらない
-		
-		//全画面化
-		dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
 
-		//背景を透明に
-		dialog.getWindow().setBackgroundDrawable(	new ColorDrawable(Color.TRANSPARENT));
-		
+		// レイアウトはonCreateViewで作られる．ので，dialog.setContentViewはいらない
+
+		// 全画面化
+		dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+
+		// 背景を透明に
+		dialog.getWindow().setBackgroundDrawable(
+				new ColorDrawable(Color.TRANSPARENT));
+
 		return dialog;
 	}
 
